@@ -18,14 +18,20 @@ const HomePage: React.FC = () => {
         <Tab eventKey="main" title="Main">
           <p>Welcome to the main page content.</p>
         </Tab>
-        <Tab eventKey="mechanical" title="Mechanical">
-          <p>Information about mechanical services and items.</p>
+        <Tab eventKey="water" title="Water">
+          <p>Add information about water systems here</p>
+        </Tab>
+        <Tab eventKey="hvac" title="HVAC">
+          <p>Add information about HVAC systems here</p>
+        </Tab>
+        <Tab eventKey="electric" title="Electrical">
+          <p>Add information about electrical systems here</p>
         </Tab>
         <Tab eventKey="appliances" title="Appliances">
-          <p>Details on various appliances we offer.</p>
+          <p>Add informatino about your appliances here</p>
         </Tab>
         <Tab eventKey="cosmetics" title="Cosmetics">
-          <p>Browse through our cosmetics products and offerings.</p>
+          <p>Add information about cosmetic work done on your home here.</p>
         </Tab>
       </Tabs>
     </Container>
