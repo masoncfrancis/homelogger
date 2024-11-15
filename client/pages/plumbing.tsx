@@ -3,16 +3,16 @@ import { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import MyNavbar from '../components/Navbar';
 
-const HomePage: React.FC = () => {
+const PlumbingPage: React.FC = () => {
   const [key, setKey] = useState<string>('main');
 
   return (
     <Container>
       <MyNavbar />
-      <p id='maintext'>Welcome to the main page.</p>
+      <p id='maintext'>Welcome to the plumbing page. </p>
     </Container>
 
   );
 };
 
-export default HomePage;
+export default PlumbingPage;
