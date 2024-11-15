@@ -2,7 +2,7 @@
 
 HomeLogger is a home maintenance tracker inspired by [LubeLogger](https://github.com/hargata/lubelog). 
 
-The project is still in it's infancy. Keep checking back here to keep an eye on our progress. 
+The project is still in it's infancy. Keep checking back here to keep an eye on the progress. 
 
 ### Tech Stack
 
