@@ -1,0 +1,100 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Todo API
+  description: A simple API to manage todos
+paths:
+  /todo:
+    get:
+      summary: Get all todos
+      responses:
+        '200':
+          description: A list of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    task:
+                      type: string
+                      example: "Change water heater anode rod"
+  /addtodo:
+    post:
+      summary: Add a new todo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task:
+                  type: string
+                  example: "Change water heater anode rod"
+      responses:
+        '201':
+          description: Todo created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  task:
+                    type: string
+                    example: "Buy groceries"
+  /deletetodo:
+    delete:
+      summary: Delete a todo
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Todo deleted
+  /updatetodo:
+    put:
+      summary: Update a todo
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                check:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Todo updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  check:
+                    type: boolean
+                    example: true
+                    
