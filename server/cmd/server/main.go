@@ -15,8 +15,7 @@ func main() {
 	app.Get("/todo", func(c *fiber.Ctx) error {
 		// Function works as follows:
 		// 1. Connect to mongodb
-		// 2. Verify API key
-		// 3. Get all todos associated with API key
+		// 2. Get all todos
 
 		// Connect to mongodb
 		mongoClient, err := database.ConnectMongo()
