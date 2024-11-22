@@ -1,13 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
+	"github.com/masoncfrancis/homelogger/server/internal/database"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, World")
+	app := fiber.New()
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World")
 	})
-	http.ListenAndServe(":8080", nil)
+
+	app.Get("/todo", func(c *fiber.Ctx) error {
+		// Function works as follows:
+		// 1. Connect to mongodb
+		// 2. Verify API key
+		// 3. Get all todos associated with API key
+
+		// Connect to mongodb
+		mongoClient, err := database.ConnectMongo()
+		if err != nil {
+			return c.SendString("Error connecting to MongoDB")
+		} else {
+			// return database connection successful message
+			return c.SendString("Connected to MongoDB database: " + mongoClient.Database("homelogger").Name())
+		}
+
+		
+	})
+
+	app.Listen(":8080")
 }
