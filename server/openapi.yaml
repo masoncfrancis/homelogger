@@ -23,6 +23,9 @@ paths:
                     task:
                       type: string
                       example: "Change water heater anode rod"
+                    checked:
+                      type: boolean
+                      example: false
   /addtodo:
     post:
       summary: Add a new todo
@@ -80,7 +83,7 @@ paths:
             schema:
               type: object
               properties:
-                check:
+                checked:
                   type: boolean
                   example: true
       responses:
@@ -94,7 +97,7 @@ paths:
                   id:
                     type: integer
                     example: 1
-                  check:
+                  checked:
                     type: boolean
                     example: true
                     
