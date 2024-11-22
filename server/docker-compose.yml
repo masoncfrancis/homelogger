@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+    networks:
+      - mongoNetwork
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mongoNetwork
+    
+
+volumes:
+  mongo-data:
+
+networks:
+  mongoNetwork:
+    driver: bridge
+  
