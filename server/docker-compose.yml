@@ -1,5 +1,6 @@
 services:
-  homelogger-server:
+  server:
+    container_name: homelogger-server
     build: .
     ports:
       - "8080:8080"
