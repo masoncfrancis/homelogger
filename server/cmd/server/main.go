@@ -3,9 +3,16 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load environment variables
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading")
+	}
+
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -21,13 +28,20 @@ func main() {
 		mongoClient, err := database.ConnectMongo()
 		if err != nil {
 			return c.SendString("Error connecting to MongoDB")
-		} else {
-			// return database connection successful message
-			return c.SendString("Connected to MongoDB database: " + mongoClient.Database("homelogger").Name())
-		}
+		} 
+
+		// Get all todos
+        todos, err := database.GetTodo(mongoClient)
+        if err != nil {
+            return c.SendString("Error fetching todos:" + err.Error())
+        }
+
+        return c.JSON(todos)
 
 		
 	})
 
 	app.Listen(":8080")
+
+
 }

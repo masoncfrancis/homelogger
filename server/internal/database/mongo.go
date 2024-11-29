@@ -4,6 +4,8 @@ import (
     "context"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
+
+    "go.mongodb.org/mongo-driver/bson"
     "log"
     "os"
 )
@@ -22,10 +24,32 @@ func ConnectMongo() (*mongo.Client, error) {
         log.Fatal(err)
     }
 
-    defer func() {
-        if err := client.Disconnect(ctx); err != nil {
-            log.Fatal(err)
-        }
-    }()
     return client, nil
 }
+
+func GetTodo(client *mongo.Client) ([]bson.M, error) {
+    collection := client.Database(MongoDBName).Collection("todo")
+    userid := 1
+
+    cursor, err := collection.Find(context.Background(), bson.M{"userid": userid})
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(context.Background())
+
+    var results []bson.M
+    for cursor.Next(context.Background()) {
+        var result bson.M
+        if err := cursor.Decode(&result); err != nil {
+            return nil, err
+        }
+        results = append(results, result)
+    }
+
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+    return results, err
+}
+

@@ -1,6 +1,5 @@
 services:
-  server:
-    container_name: homelogger-server
+  homelogger-server:
     build: .
     ports:
       - "8080:8080"
@@ -16,6 +15,8 @@ services:
     image: mongo:latest
     volumes:
       - mongo-data:/data/db
+    ports:
+      - "27017:27017"
     networks:
       - mongoNetwork
     
