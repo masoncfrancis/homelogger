@@ -5,7 +5,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import TodoItem from '../components/TodoItem';
 
 // Get server url from environment variable
-const SERVER_URL = process.env.SERVER_URL;
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const todoUrl = `${SERVER_URL}/todo`;
 
 const TodoPage: React.FC = () => {
@@ -28,7 +28,9 @@ const TodoPage: React.FC = () => {
   return (
     <Container>
       <MyNavbar />
+      <p id='serverurl'>{SERVER_URL}</p>
       <p id='maintext'>To do:</p>
+      
       <ListGroup>
         {todos.map((todo, index) => (
           <TodoItem key={index} label={todo.label} checked={todo.checked} />
