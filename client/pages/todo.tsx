@@ -4,22 +4,26 @@ import MyNavbar from '../components/Navbar';
 import ListGroup from 'react-bootstrap/ListGroup';
 import TodoItem from '../components/TodoItem';
 
-const jsonObject = {
-  "todo": [
-    {
-      "label": "Change anode rod",
-      "checked": false
-    },
-    {
-      "label": "Change air filter",
-      "checked": true
-    }
-  ]
-}
+// Get server url from environment variable
+const SERVER_URL = process.env.SERVER_URL;
+const todoUrl = `${SERVER_URL}/todo`;
 
 const TodoPage: React.FC = () => {
-  const [key, setKey] = useState<string>('main');
-  const [todos, setTodos] = useState(jsonObject.todo);
+  const [todos, setTodos] = useState<{ label: string; checked: boolean }[]>([]);
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch(todoUrl);
+        const data = await response.json();
+        setTodos(data.todo);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+      }
+    };
+
+    fetchTodos();
+  }, []);
 
   return (
     <Container>

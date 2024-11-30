@@ -3,7 +3,7 @@ services:
     container_name: homelogger-server
     build: .
     ports:
-      - "8080:8080"
+      - "8083:8083"
     depends_on:
       - mongodb
     networks:
