@@ -9,7 +9,7 @@ const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const todoUrl = `${SERVER_URL}/todo`;
 
 const TodoPage: React.FC = () => {
-  const [todos, setTodos] = useState<{ task: string; checked: boolean }[]>([]);
+  const [todos, setTodos] = useState<{ label: string; checked: boolean }[]>([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
