@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
 	"github.com/joho/godotenv"
 )
@@ -14,6 +15,13 @@ func main() {
 	}
 
 	app := fiber.New()
+
+	// Use CORS middleware
+    app.Use(cors.New(cors.Config{
+        AllowOrigins: "*", // Allow all origins
+        AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
+        AllowHeaders: "Content-Type,Authorization",
+    }))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World")

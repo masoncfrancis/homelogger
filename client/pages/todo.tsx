@@ -16,7 +16,7 @@ const TodoPage: React.FC = () => {
       try {
         const response = await fetch(todoUrl);
         const data = await response.json();
-        setTodos(data.todo);
+        setTodos(data);
       } catch (error) {
         console.error('Error fetching todos:', error);
       }
@@ -33,7 +33,7 @@ const TodoPage: React.FC = () => {
       
       <ListGroup>
         {todos.map((todo, index) => (
-          <TodoItem key={index} label={todo.label} checked={todo.checked} />
+          <TodoItem key={todo._id} label={todo.task} checked={todo.checked} />
         ))}
       </ListGroup>
     </Container>

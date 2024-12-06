@@ -9,7 +9,7 @@ interface TodoItemProps {
 const TodoItem: React.FC<TodoItemProps> = ({ label, checked }) => {
   return (
     <ListGroup.Item>
-      <Form.Check type='checkbox' label={label} checked={checked} />
+      <Form.Check type='checkbox' label={label} defaultChecked={checked} />
     </ListGroup.Item>
   );
 };
