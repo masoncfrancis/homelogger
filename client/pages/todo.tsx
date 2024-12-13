@@ -9,7 +9,7 @@ export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const todoUrl = `${SERVER_URL}/todo`;
 
 const TodoPage: React.FC = () => {
-  const [todos, setTodos] = useState<{ _id: string; task: string; checked: boolean; userid: number }[]>([]);
+  const [todos, setTodos] = useState<{ _id: string; label: string; checked: boolean; userid: number }[]>([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -33,7 +33,7 @@ const TodoPage: React.FC = () => {
       
       <ListGroup>
         {todos.map((todo, index) => (
-          <TodoItem id={todo._id} label={todo.task} checked={todo.checked} />
+          <TodoItem id={todo._id} label={todo.label} checked={todo.checked} />
         ))}
       </ListGroup>
     </Container>
