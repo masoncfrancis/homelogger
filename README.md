@@ -17,3 +17,8 @@ The project is still in it's infancy. Keep checking back here to keep an eye on 
 
 - Go
 - Go Fiber
+- GORM
+
+#### Database:
+
+- SQLite
