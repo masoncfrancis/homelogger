@@ -4,24 +4,3 @@ services:
     build: .
     ports:
       - "8083:8083"
-    depends_on:
-      - mongodb
-    networks:
-      - mongoNetwork
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/homelogger
-
-  mongodb:
-    container_name: homelogger-mongo
-    image: mongo:latest
-    volumes:
-      - ./db-data/mongo:/data/db
-    ports:
-      - "27017:27017"
-    networks:
-      - mongoNetwork
-
-networks:
-  mongoNetwork:
-    driver: bridge
-  
