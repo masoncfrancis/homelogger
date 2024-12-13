@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
+	"github.com/masoncfrancis/homelogger/server/internal/models"
 	"github.com/joho/godotenv"
 )
 
@@ -26,6 +27,9 @@ func main() {
 		panic("Error migrating GORM")
 	}
 
+	// Preload some test data
+	db.Create(&models.Todo{Label: "Test todo", UserID: 1})
+	db.Create(&models.Todo{Label: "Test todo 2", UserID: 1, Checked: true})
 
 	// Create new fiber app
 	app := fiber.New()
