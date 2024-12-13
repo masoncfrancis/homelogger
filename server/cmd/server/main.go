@@ -14,6 +14,20 @@ func main() {
 		panic("Error loading")
 	}
 
+	// Connect to GORM
+	db, err := database.ConnectGorm()
+	if err != nil {
+		panic("Error connecting to GORM")
+	}
+
+	// Migrate GORM
+	err = database.MigrateGorm(db)
+	if err != nil {
+		panic("Error migrating GORM")
+	}
+
+
+	// Create new fiber app
 	app := fiber.New()
 
 	// Use CORS middleware
