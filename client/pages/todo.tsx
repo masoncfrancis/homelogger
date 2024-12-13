@@ -33,7 +33,7 @@ const TodoPage: React.FC = () => {
       
       <ListGroup>
         {todos.map((todo, index) => (
-          <TodoItem key={todo._id} label={todo.task} checked={todo.checked} />
+          <TodoItem id={todo._id} label={todo.task} checked={todo.checked} />
         ))}
       </ListGroup>
     </Container>

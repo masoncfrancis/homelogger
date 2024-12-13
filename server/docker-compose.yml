@@ -15,16 +15,11 @@ services:
     container_name: homelogger-mongo
     image: mongo:latest
     volumes:
-      - mongo-data:/data/db
+      - ./mongo-data:/data/db
     ports:
       - "27017:27017"
     networks:
       - mongoNetwork
-    
-    
-
-volumes:
-  mongo-data:
 
 networks:
   mongoNetwork:
