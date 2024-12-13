@@ -31,6 +31,8 @@ func main() {
 	db.Create(&models.Todo{Label: "Test todo", UserID: 1})
 	db.Create(&models.Todo{Label: "Test todo 2", UserID: 1, Checked: true})
 
+	// TODO: change from mongo to gorm for todo list
+
 	// Create new fiber app
 	app := fiber.New()
 
