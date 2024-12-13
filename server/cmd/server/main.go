@@ -49,6 +49,32 @@ func main() {
 		
 	})
 
+	app.Put("/todo/update/:id", func(c *fiber.Ctx) error {
+		// Function works as follows:
+		// 1. Connect to mongodb
+		// 2. Update todo
+
+		// Connect to mongodb
+		mongoClient, err := database.ConnectMongo()
+		if err != nil {
+			return c.SendString("Error connecting to MongoDB")
+		}
+
+		// Update todo
+		var todo map[string]interface{}
+		if err := c.BodyParser(&todo); err != nil {
+			return c.SendString("Error parsing body:" + err.Error())
+		}
+		todo["_id"] = c.Params("id")
+
+		err = database.UpdateTodo(mongoClient, todo)
+		if err != nil {
+			return c.SendString("Error updating todo:" + err.Error())
+		}
+
+		return c.SendString("Todo updated")
+	})
+
 	app.Listen(":8083")
 
 

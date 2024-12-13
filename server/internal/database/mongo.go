@@ -4,7 +4,7 @@ import (
     "context"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
-
+    "fmt"
     "go.mongodb.org/mongo-driver/bson"
     "log"
     "os"
@@ -15,8 +15,7 @@ const MongoDBName = "homelogger"
 func ConnectMongo() (*mongo.Client, error) {
     mongoUrl := os.Getenv("MONGODB_URI")
     if mongoUrl == "" {
-        log.Fatal("Set your 'MONGODB_URI' environment variable. " +
-            "See: usage-examples/#environment-variable")
+        log.Fatal("Set your 'MONGODB_URI' environment variable. ")
     }
     ctx := context.TODO()
     client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoUrl))
@@ -51,5 +50,23 @@ func GetTodo(client *mongo.Client) ([]bson.M, error) {
     }
 
     return results, err
+}
+
+func UpdateTodo(client *mongo.Client, todo bson.M) error {
+    collection := client.Database(MongoDBName).Collection("todo")
+    filter := bson.M{"_id": todo["_id"]}
+    update := bson.M{"$set": bson.M{"checked": todo["checked"]}}
+
+    result, err := collection.UpdateOne(context.Background(), filter, update)
+    if err != nil {
+        return err
+    }
+    if result.MatchedCount == 0 {
+        return fmt.Errorf("no documents matched the filter")
+    }
+    if result.ModifiedCount == 0 {
+        return fmt.Errorf("no documents were updated")
+    }
+    return err
 }
 

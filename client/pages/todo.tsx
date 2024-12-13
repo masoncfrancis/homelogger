@@ -5,7 +5,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import TodoItem from '../components/TodoItem';
 
 // Get server url from environment variable
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const todoUrl = `${SERVER_URL}/todo`;
 
 const TodoPage: React.FC = () => {

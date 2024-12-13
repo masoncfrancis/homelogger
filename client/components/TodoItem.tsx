@@ -1,6 +1,7 @@
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useState } from 'react';
+import { SERVER_URL } from '../pages/todo'; 
 
 interface TodoItemProps {
     id: string;
@@ -9,14 +10,14 @@ interface TodoItemProps {
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked }) => {
-  const [isChecked, setIsChecked] = useState(checked);
+  const [isChecked, setIsChecked] = useState<boolean>(checked);
 
   const handleCheckboxChange = async () => {
     setIsChecked(!isChecked);
 
     try {
-      const response = await fetch(`/api/todos/${id}`, {
-        method: 'PATCH',
+      const response = await fetch(SERVER_URL + `/todo/update/${id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -42,3 +43,5 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked }) => {
     </ListGroup.Item>
   );
 };
+
+export default TodoItem;
