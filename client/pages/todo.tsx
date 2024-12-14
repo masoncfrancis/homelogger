@@ -28,7 +28,7 @@ const TodoPage: React.FC = () => {
 
 
     const handleAddTodo = async () => {
-        const label = prompt('Enter the new item:');
+        const label = prompt('What should go in this item?');
         if (label) {
             const newTodo = {label, checked: false, userid: "1"};
 
@@ -56,7 +56,6 @@ const TodoPage: React.FC = () => {
     return (
         <Container>
             <MyNavbar/>
-            <p id='serverurl'>{SERVER_URL}</p>
             <p id='maintext'>To do:</p>
 
             <ListGroup>
@@ -64,7 +63,7 @@ const TodoPage: React.FC = () => {
                     <TodoItem id={todo.id} label={todo.label} checked={todo.checked}/>
                 ))}
             </ListGroup>
-            <i className="bi bi-plus-square-fill" onClick={handleAddTodo} style={{fontSize: '2rem'}}></i>
+            <i className="bi bi-plus-square-fill"  onClick={handleAddTodo} style={{fontSize: '2rem', cursor: "pointer"}}></i>
         </Container>
     );
 };
