@@ -15,3 +15,13 @@ func GetTodos(db *gorm.DB) ([]models.Todo, error) {
 
 	return todos, nil
 }
+
+// ChangeTodoChecked changes the checked status of a todo
+func ChangeTodoChecked(db *gorm.DB, id uint, checked bool) error {
+	result := db.Model(&models.Todo{}).Where("id = ?", id).Update("checked", checked)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

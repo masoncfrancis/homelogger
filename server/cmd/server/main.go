@@ -6,13 +6,14 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
 	"github.com/masoncfrancis/homelogger/server/internal/models"
+	"strconv"
 )
 
 func main() {
 	// Load environment variables
 	err := godotenv.Load()
 	if err != nil {
-		panic("Error loading")
+		panic("Error loading environment variables. Check if .env file exists")
 	}
 
 	// Connect to GORM
@@ -31,9 +32,7 @@ func main() {
 	db.Create(&models.Todo{Label: "Test todo", UserID: "1"})
 	db.Create(&models.Todo{Label: "Test todo 2", UserID: "1", Checked: true})
 
-	// TODO: change from mongo to gorm for todo list
-
-	// Create new fiber app
+	// Create new fiber server
 	app := fiber.New()
 
 	// Use CORS middleware
@@ -66,6 +65,46 @@ func main() {
 
 		return c.JSON(todos)
 
+	})
+
+	app.Put("/todo/update/:id", func(c *fiber.Ctx) error {
+		// Function works as follows:
+		// 1. Connect to gorm
+		// 2. Get the id from the URL
+		// 3. Get the checked status from the body
+		// 4. Change the checked status of the todo
+
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting to GORM")
+		}
+
+		// Get the id from the URL
+		id := c.Params("id")
+
+		// Get the checked status from the body
+		var body struct {
+			Checked bool `json:"checked"`
+		}
+		err = c.BodyParser(&body)
+		if err != nil {
+			return c.SendString("Error parsing body")
+		}
+
+		// Convert id to uint
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.SendString("Invalid ID format")
+		}
+
+		// Change the checked status of the todo
+		err = database.ChangeTodoChecked(db, uint(idUint), body.Checked)
+		if err != nil {
+			return c.SendString("Error changing todo checked status:" + err.Error())
+		}
+
+		return c.SendString("Todo updated")
 	})
 
 	app.Listen(":8083")
