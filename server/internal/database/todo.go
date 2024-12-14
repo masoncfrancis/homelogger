@@ -25,3 +25,14 @@ func ChangeTodoChecked(db *gorm.DB, id uint, checked bool) error {
 
 	return nil
 }
+
+// AddTodo adds a todo and returns the created todo
+func AddTodo(db *gorm.DB, label string, checked bool, userID string) (models.Todo, error) {
+	todo := models.Todo{Label: label, Checked: checked, UserID: userID}
+	result := db.Create(&todo)
+	if result.Error != nil {
+		return models.Todo{}, result.Error
+	}
+
+	return todo, nil
+}

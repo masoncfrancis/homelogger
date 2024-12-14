@@ -107,6 +107,33 @@ func main() {
 		return c.SendString("Todo updated")
 	})
 
+	app.Post("/todo/add", func(c *fiber.Ctx) error {
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting to GORM")
+		}
+
+		// Get the label, checked status, and userid from the body
+		var body struct {
+			Label   string `json:"label"`
+			Checked bool   `json:"checked"`
+			UserID  string `json:"userid"`
+		}
+		err = c.BodyParser(&body)
+		if err != nil {
+			return c.SendString("Error parsing body")
+		}
+
+		// Add a todo
+		todo, err := database.AddTodo(db, body.Label, body.Checked, body.UserID)
+		if err != nil {
+			return c.SendString("Error adding todo:" + err.Error())
+		}
+
+		return c.JSON(todo)
+	})
+
 	app.Listen(":8083")
 
 }

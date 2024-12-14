@@ -1,43 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { Container } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Container} from 'react-bootstrap';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import MyNavbar from '../components/Navbar';
 import ListGroup from 'react-bootstrap/ListGroup';
 import TodoItem from '../components/TodoItem';
+import {SERVER_URL} from "@/pages/_app";
 
-// Get server url from environment variable
-export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const todoUrl = `${SERVER_URL}/todo`;
+const todoAddUrl = `${SERVER_URL}/todo/add`;
 
 const TodoPage: React.FC = () => {
-  const [todos, setTodos] = useState<{ id: string; label: string; checked: boolean; userid: number }[]>([]);
+    const [todos, setTodos] = useState<{ id: string; label: string; checked: boolean; userid: number }[]>([]);
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const response = await fetch(todoUrl);
-        const data = await response.json();
-        setTodos(data);
-      } catch (error) {
-        console.error('Error fetching todos:', error);
-      }
+    useEffect(() => {
+        const fetchTodos = async () => {
+            try {
+                const response = await fetch(todoUrl);
+                const data = await response.json();
+                setTodos(data);
+            } catch (error) {
+                console.error('Error fetching todos:', error);
+            }
+        };
+
+        fetchTodos();
+    }, []);
+
+
+    const handleAddTodo = async () => {
+        const label = prompt('Enter the new item:');
+        if (label) {
+            const newTodo = {label, checked: false, userid: "1"};
+
+            try {
+                const response = await fetch(todoAddUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newTodo),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to add todo');
+                }
+
+                const addedTodo = await response.json();
+                setTodos([...todos, addedTodo]);
+            } catch (error) {
+                console.error('Error adding todo:', error);
+            }
+        }
     };
 
-    fetchTodos();
-  }, []);
+    return (
+        <Container>
+            <MyNavbar/>
+            <p id='serverurl'>{SERVER_URL}</p>
+            <p id='maintext'>To do:</p>
 
-  return (
-    <Container>
-      <MyNavbar />
-      <p id='serverurl'>{SERVER_URL}</p>
-      <p id='maintext'>To do:</p>
-      
-      <ListGroup>
-        {todos.map((todo, index) => (
-          <TodoItem id={todo.id} label={todo.label} checked={todo.checked} />
-        ))}
-      </ListGroup>
-    </Container>
-  );
+            <ListGroup>
+                {todos.map((todo, index) => (
+                    <TodoItem id={todo.id} label={todo.label} checked={todo.checked}/>
+                ))}
+            </ListGroup>
+            <i className="bi bi-plus-square-fill" onClick={handleAddTodo} style={{fontSize: '2rem'}}></i>
+        </Container>
+    );
 };
 
 export default TodoPage;

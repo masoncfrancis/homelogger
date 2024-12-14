@@ -20,12 +20,15 @@ paths:
                     id:
                       type: integer
                       example: 1
-                    task:
+                    label:
                       type: string
                       example: "Change water heater anode rod"
                     checked:
                       type: boolean
                       example: false
+                    userID:
+                      type: string
+                      example: "675c831a85ac9204985b80c9"
   /todo/add:
     post:
       summary: Add a new todo
@@ -36,9 +39,12 @@ paths:
             schema:
               type: object
               properties:
-                task:
+                label:
                   type: string
                   example: "Change water heater anode rod"
+                userID:
+                  type: string
+                  example: "675c831a85ac9204985b80c9"
       responses:
         '201':
           description: Todo created
@@ -50,7 +56,7 @@ paths:
                   id:
                     type: integer
                     example: 1
-                  task:
+                  label:
                     type: string
                     example: "Buy groceries"
   /todo/delete:
