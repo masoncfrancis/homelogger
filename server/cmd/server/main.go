@@ -28,10 +28,6 @@ func main() {
 		panic("Error migrating GORM")
 	}
 
-	// Preload some test data
-	db.Create(&models.Todo{Label: "Test todo", UserID: "1"})
-	db.Create(&models.Todo{Label: "Test todo 2", UserID: "1", Checked: true})
-
 	// Create new fiber server
 	app := fiber.New()
 
