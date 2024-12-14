@@ -1,6 +1,0 @@
-services:
-  server:
-    container_name: homelogger-server
-    build: .
-    ports:
-      - "8083:8083"
