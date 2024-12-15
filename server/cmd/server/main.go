@@ -5,7 +5,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
-	"github.com/masoncfrancis/homelogger/server/internal/models"
 	"strconv"
 )
 
