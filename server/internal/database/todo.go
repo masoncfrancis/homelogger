@@ -36,3 +36,13 @@ func AddTodo(db *gorm.DB, label string, checked bool, userID string) (models.Tod
 
 	return todo, nil
 }
+
+// DeleteTodo deletes a todo
+func DeleteTodo(db *gorm.DB, id uint) error {
+	result := db.Where("id = ?", id).Delete(&models.Todo{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

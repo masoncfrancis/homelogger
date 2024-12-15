@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Container} from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container } from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import MyNavbar from '../components/Navbar';
 import ListGroup from 'react-bootstrap/ListGroup';
 import TodoItem from '../components/TodoItem';
-import {SERVER_URL} from "@/pages/_app";
+import { SERVER_URL } from "@/pages/_app";
 
 const todoUrl = `${SERVER_URL}/todo`;
 const todoAddUrl = `${SERVER_URL}/todo/add`;
@@ -26,11 +26,10 @@ const TodoPage: React.FC = () => {
         fetchTodos();
     }, []);
 
-
     const handleAddTodo = async () => {
         const label = prompt('What should go in this item?');
         if (label) {
-            const newTodo = {label, checked: false, userid: "1"};
+            const newTodo = { label, checked: false, userid: "1" };
 
             try {
                 const response = await fetch(todoAddUrl, {
@@ -53,17 +52,21 @@ const TodoPage: React.FC = () => {
         }
     };
 
+    const handleDeleteTodo = (id: string) => {
+        setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    };
+
     return (
         <Container>
-            <MyNavbar/>
+            <MyNavbar />
             <p id='maintext'>To do:</p>
 
             <ListGroup>
                 {todos.map((todo, index) => (
-                    <TodoItem id={todo.id} label={todo.label} checked={todo.checked}/>
+                    <TodoItem key={index} id={todo.id} label={todo.label} checked={todo.checked} onDelete={handleDeleteTodo} />
                 ))}
             </ListGroup>
-            <i className="bi bi-plus-square-fill"  onClick={handleAddTodo} style={{fontSize: '2rem', cursor: "pointer"}}></i>
+            <i className="bi bi-plus-square-fill" onClick={handleAddTodo} style={{ fontSize: '2rem', cursor: "pointer" }}></i>
         </Container>
     );
 };

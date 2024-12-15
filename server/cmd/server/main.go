@@ -134,6 +134,31 @@ func main() {
 		return c.JSON(todo)
 	})
 
+	app.Delete("/todo/delete/:id", func(c *fiber.Ctx) error {
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting to GORM")
+		}
+
+		// Get the id from the URL
+		id := c.Params("id")
+
+		// Convert id to uint
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.SendString("Invalid ID format")
+		}
+
+		// Delete the todo
+		err = database.DeleteTodo(db, uint(idUint))
+		if err != nil {
+			return c.SendString("Error deleting todo:" + err.Error())
+		}
+
+		return c.SendString("Todo deleted")
+	})
+
 	app.Listen(":8083")
 
 }

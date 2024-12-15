@@ -59,15 +59,15 @@ paths:
                   label:
                     type: string
                     example: "Buy groceries"
-  /todo/delete:
+  /todo/delete/{id}:
     delete:
       summary: Delete a todo
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           schema:
-            type: integer
+            type: int
             example: 1
       responses:
         '204':
@@ -80,8 +80,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            example: 675c831a85ac9204985b80c9
+            type: int
+            example: 2
       requestBody:
         required: true
         content:
