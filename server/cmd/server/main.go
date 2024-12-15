@@ -3,18 +3,11 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/joho/godotenv"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
 	"strconv"
 )
 
 func main() {
-	// Load environment variables
-	err := godotenv.Load()
-	if err != nil {
-		panic("Error loading environment variables. Check if .env file exists")
-	}
-
 	// Connect to GORM
 	db, err := database.ConnectGorm()
 	if err != nil {
