@@ -9,7 +9,13 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-RUN npm run build
+# Use build argument to determine the environment
+ARG BUILD_ENV=development
+RUN if [ "$BUILD_ENV" = "production" ]; then \
+        next build; \
+    else \
+        npm run dev; \
+    fi
 
 # Stage 2: Production stage
 FROM node:22-alpine
@@ -24,5 +30,10 @@ COPY --from=builder /app/node_modules ./node_modules
 # Expose port 3000
 EXPOSE 3000
 
-# Start the Next.js server
-CMD ["npm", "start"]
+# Use build argument to determine the start command
+ARG BUILD_ENV=development
+CMD if [ "$BUILD_ENV" = "production" ]; then \
+        npm start; \
+    else \
+        npm run dev; \
+    fi

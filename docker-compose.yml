@@ -1,0 +1,31 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      args:
+        BUILD_ENV: ${BUILD_ENV}
+    volumes:
+      - ./server/db-data/sqlite:/app/db-data/sqlite
+    environment:
+      - ENV=${BUILD_ENV}
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        BUILD_ENV: ${BUILD_ENV}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    networks:
+      - homelogger_network
+    environment:
+      - ENV=${BUILD_ENV}
+
+
+networks:
+  homelogger_network:
+    driver: bridge
