@@ -1,6 +1,5 @@
 services:
   server:
-    container_name: homelogger-server
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -10,7 +9,6 @@ services:
       - "127.0.0.1:8084:8083"
 
   client:
-    container_name: homelogger-client
     build:
       context: ./client
       dockerfile: Dockerfile
