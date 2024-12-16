@@ -6,23 +6,13 @@ services:
     volumes:
       - ./server/db-data/sqlite:/root/db-data/sqlite
     ports:
-      - "8083:8083"
+      - "127.0.0.1:8084:8083"
 
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3001:3000"
     depends_on:
       - server
-    networks:
-      - homelogger_network
-    environment:
-      - NEXT_PUBLIC_SERVER_URL=http://serv.v8motor.us:8083
-
-
-
-networks:
-  homelogger_network:
-    driver: bridge
