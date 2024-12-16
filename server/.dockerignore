@@ -1,3 +1,4 @@
 db-data/
 .vscode
 .idea
+.env

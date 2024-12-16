@@ -3,8 +3,6 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-      args:
-        BUILD_ENV: ${BUILD_ENV}
     volumes:
       - ./server/db-data/sqlite:/root/db-data/sqlite
     ports:
@@ -20,6 +18,8 @@ services:
       - server
     networks:
       - homelogger_network
+    environment:
+      - NEXT_PUBLIC_SERVER_URL=http://serv.v8motor.us:8083
 
 
 
