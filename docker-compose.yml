@@ -7,6 +7,7 @@ services:
       - ./server/db-data/sqlite:/root/db-data/sqlite
     ports:
       - "127.0.0.1:8084:8083"
+    restart: unless-stopped
 
   client:
     build:
@@ -16,3 +17,4 @@ services:
       - "127.0.0.1:3001:3000"
     depends_on:
       - server
+    restart: unless-stopped
