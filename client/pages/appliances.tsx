@@ -23,7 +23,6 @@ const AppliancesPage: React.FC = () => {
     return (
         <Container>
             <MyNavbar/>
-            <p id='maintext'>Welcome to the appliances page.</p>
             <BlankCard onClick={handleAddCardClick}/>
             <AddApplianceModal
                 show={showModal}
