@@ -106,4 +106,55 @@ paths:
                   checked:
                     type: boolean
                     example: true
+  /appliances/add:
+    post:
+      summary: Add a new appliance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                makeModel:
+                  type: string
+                  example: "Samsung Washer"
+                yearPurchased:
+                  type: string
+                  example: "2020"
+                purchasePrice:
+                  type: string
+                  example: "500"
+                location:
+                  type: string
+                  example: "Laundry Room"
+                type:
+                  type: string
+                  example: "Washer"
+      responses:
+        '201':
+          description: Appliance created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  makeModel:
+                    type: string
+                    example: "Samsung Washer"
+                  yearPurchased:
+                    type: string
+                    example: "2020"
+                  purchasePrice:
+                    type: string
+                    example: "500"
+                  location:
+                    type: string
+                    example: "Laundry Room"
+                  type:
+                    type: string
+                    example: "Washer"
                     
