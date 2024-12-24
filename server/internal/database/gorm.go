@@ -1,9 +1,9 @@
 package database
 
 import (
+	"github.com/masoncfrancis/homelogger/server/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"github.com/masoncfrancis/homelogger/server/internal/models"
 )
 
 // ConnectGorm connects to the database
@@ -18,7 +18,7 @@ func ConnectGorm() (*gorm.DB, error) {
 
 // MigrateGorm migrates the database
 func MigrateGorm(db *gorm.DB) error {
-	err := db.AutoMigrate(&models.Todo{})
+	err := db.AutoMigrate(&models.Todo{}, &models.Appliance{})
 	if err != nil {
 		return err
 	}
