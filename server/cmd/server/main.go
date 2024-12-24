@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
+	"github.com/masoncfrancis/homelogger/server/internal/models"
 	"strconv"
 )
 
@@ -11,7 +12,7 @@ func main() {
 	// Connect to GORM
 	db, err := database.ConnectGorm()
 	if err != nil {
-		panic("Error connecting to GORM")
+		panic("Error connecting GORM to db")
 	}
 
 	// Migrate GORM
@@ -35,14 +36,10 @@ func main() {
 	})
 
 	app.Get("/todo", func(c *fiber.Ctx) error {
-		// Function works as follows:
-		// 1. Connect to gorm
-		// 2. Get all todos
-
 		// Connect to gorm
 		db, err := database.ConnectGorm()
 		if err != nil {
-			return c.SendString("Error connecting to GORM")
+			return c.SendString("Error connecting GORM to db")
 		}
 
 		// Get all todos
@@ -52,20 +49,13 @@ func main() {
 		}
 
 		return c.JSON(todos)
-
 	})
 
 	app.Put("/todo/update/:id", func(c *fiber.Ctx) error {
-		// Function works as follows:
-		// 1. Connect to gorm
-		// 2. Get the id from the URL
-		// 3. Get the checked status from the body
-		// 4. Change the checked status of the todo
-
 		// Connect to gorm
 		db, err := database.ConnectGorm()
 		if err != nil {
-			return c.SendString("Error connecting to GORM")
+			return c.SendString("Error connecting GORM to db")
 		}
 
 		// Get the id from the URL
@@ -99,7 +89,7 @@ func main() {
 		// Connect to gorm
 		db, err := database.ConnectGorm()
 		if err != nil {
-			return c.SendString("Error connecting to GORM")
+			return c.SendString("Error connecting GORM to db")
 		}
 
 		// Get the label, checked status, and userid from the body
@@ -126,7 +116,7 @@ func main() {
 		// Connect to gorm
 		db, err := database.ConnectGorm()
 		if err != nil {
-			return c.SendString("Error connecting to GORM")
+			return c.SendString("Error connecting GORM to db")
 		}
 
 		// Get the id from the URL
@@ -147,6 +137,58 @@ func main() {
 		return c.SendString("Todo deleted")
 	})
 
-	app.Listen(":8083")
+	// Get all appliances
+	app.Get("/appliances", func(c *fiber.Ctx) error {
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting GORM to db")
+		}
 
+		// Get all appliances
+		appliances, err := database.GetAppliances(db)
+		if err != nil {
+			return c.SendString("Error getting appliances:" + err.Error())
+		}
+
+		return c.JSON(appliances)
+	})
+
+	// Create a new appliance
+	app.Post("/appliances/add", func(c *fiber.Ctx) error {
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting GORM to db")
+		}
+
+		// Get the makeModel, yearPurchased, purchasePrice, location, and type from the body
+		var body struct {
+			MakeModel     string `json:"makeModel"`
+			YearPurchased string `json:"yearPurchased"`
+			PurchasePrice string `json:"purchasePrice"`
+			Location      string `json:"location"`
+			Type          string `json:"type"`
+		}
+		err = c.BodyParser(&body)
+		if err != nil {
+			return c.SendString("Error parsing body")
+		}
+
+		// Add an appliance
+		appliance, err := database.AddAppliance(db, &models.Appliance{
+			MakeModel:     body.MakeModel,
+			YearPurchased: body.YearPurchased,
+			PurchasePrice: body.PurchasePrice,
+			Location:      body.Location,
+			Type:          body.Type,
+		})
+		if err != nil {
+			return c.SendString("Error adding appliance:" + err.Error())
+		}
+
+		return c.JSON(appliance)
+	})
+
+	app.Listen(":8083")
 }
