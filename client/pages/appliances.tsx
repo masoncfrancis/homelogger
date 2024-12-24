@@ -18,6 +18,8 @@ const AppliancesPage: React.FC = () => {
     const handleSaveAppliance = (makeModel: string, yearPurchased: string, purchasePrice: string, location: string, type: string) => {
         // Logic to save the new appliance
         console.log('Appliance saved:', {makeModel, yearPurchased, purchasePrice, location, type});
+        setShowModal(false);
+
     };
 
     return (
