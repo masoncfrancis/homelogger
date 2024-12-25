@@ -13,16 +13,18 @@ interface ApplianceCardProps {
 
 const ApplianceCard: React.FC<ApplianceCardProps> = ({ id, makeModel, location, type }) => {
   return (
-    <Link href={`/appliance/${id}`} passHref>
-      <Card style={{ width: '18rem', margin: '0', padding: '0', cursor: 'pointer' }}>
-        <Card.Body>
-          <Card.Title>{makeModel}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">{type}</Card.Subtitle>
-          <Card.Text>
-            <strong>Location:</strong> {location}
-          </Card.Text>
-        </Card.Body>
-      </Card>
+    <Link href={`/appliance/${id}`} legacyBehavior passHref>
+      <a style={{ textDecoration: 'none' }}>
+        <Card style={{ width: '18rem', margin: '0', padding: '0', cursor: 'pointer' }}>
+          <Card.Body>
+            <Card.Title>{makeModel}</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">{type}</Card.Subtitle>
+            <Card.Text>
+              <strong>Location:</strong> {location}
+            </Card.Text>
+          </Card.Body>
+        </Card>
+      </a>
     </Link>
   );
 };
