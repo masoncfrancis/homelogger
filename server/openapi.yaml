@@ -137,6 +137,52 @@ paths:
                     type:
                       type: string
                       example: "Washer"
+  /appliances/{id}:
+    get:
+      summary: Get an appliance by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: An appliance object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  makeModel:
+                    type: string
+                    example: "Samsung Washer"
+                  yearPurchased:
+                    type: string
+                    example: "2020"
+                  purchasePrice:
+                    type: string
+                    example: "500"
+                  location:
+                    type: string
+                    example: "Laundry Room"
+                  type:
+                    type: string
+                    example: "Washer"
+        '404':
+          description: Appliance not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Appliance not found"
   /appliances/add:
     post:
       summary: Add a new appliance
