@@ -36,3 +36,13 @@ func GetAppliance(db *gorm.DB, id uint) (*models.Appliance, error) {
 
 	return &appliance, nil
 }
+
+// DeleteAppliance deletes an appliance by ID
+func DeleteAppliance(db *gorm.DB, id uint) error {
+	result := db.Where("id = ?", id).Delete(&models.Appliance{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

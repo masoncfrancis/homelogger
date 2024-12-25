@@ -234,3 +234,16 @@ paths:
                   type:
                     type: string
                     example: "Washer"
+  /appliances/delete/{id}:
+    delete:
+      summary: Delete an appliance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: int
+            example: 1
+      responses:
+        '204':
+          description: Appliance deleted
