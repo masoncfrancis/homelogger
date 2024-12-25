@@ -1,7 +1,7 @@
-// pages/appliance/[id].tsx
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import MyNavbar from '../../components/Navbar';
 import { SERVER_URL } from "@/pages/_app";
 
@@ -28,6 +28,24 @@ const AppliancePage: React.FC = () => {
     }
   }, [id]);
 
+  const handleDelete = async () => {
+    if (id && window.confirm('Are you sure you want to delete this appliance?')) {
+      try {
+        const response = await fetch(`${SERVER_URL}/appliances/delete/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete appliance');
+        }
+
+        router.push('/appliances');
+      } catch (error) {
+        console.error('Error deleting appliance:', error);
+      }
+    }
+  };
+
   if (!appliance) {
     return <div>Loading...</div>;
   }
@@ -46,6 +64,13 @@ const AppliancePage: React.FC = () => {
                 <strong>Purchase Price:</strong> {appliance.purchasePrice}<br />
                 <strong>Location:</strong> {appliance.location}
               </Card.Text>
+              <Row>
+                <Col>
+                  <Button variant="danger" onClick={handleDelete} style={{ marginTop: '10px' }}>
+                    <i className="bi bi-trash"></i>
+                  </Button>
+                </Col>
+              </Row>
             </Card.Body>
           </Card>
         </Col>

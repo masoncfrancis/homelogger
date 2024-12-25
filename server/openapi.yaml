@@ -245,5 +245,5 @@ paths:
             type: int
             example: 1
       responses:
-        '204':
+        '200':
           description: Appliance deleted
