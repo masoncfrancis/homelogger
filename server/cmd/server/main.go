@@ -190,5 +190,30 @@ func main() {
 		return c.JSON(appliance)
 	})
 
+	app.Get("/appliances/:id", func(c *fiber.Ctx) error {
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting GORM to db")
+		}
+
+		// Get the id from the URL
+		id := c.Params("id")
+
+		// Convert id to uint
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.SendString("Invalid ID format")
+		}
+
+		// Get the appliance
+		appliance, err := database.GetAppliance(db, uint(idUint))
+		if err != nil {
+			return c.SendString("Error getting appliance:" + err.Error())
+		}
+
+		return c.JSON(appliance)
+	})
+
 	app.Listen(":8083")
 }

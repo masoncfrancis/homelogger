@@ -25,3 +25,14 @@ func AddAppliance(db *gorm.DB, appliance *models.Appliance) (*models.Appliance, 
 
 	return appliance, nil
 }
+
+// GetAppliance gets an appliance by ID
+func GetAppliance(db *gorm.DB, id uint) (*models.Appliance, error) {
+	var appliance models.Appliance
+	result := db.Where("id = ?", id).First(&appliance)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &appliance, nil
+}

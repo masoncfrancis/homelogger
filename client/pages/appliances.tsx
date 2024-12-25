@@ -68,6 +68,7 @@ const AppliancesPage: React.FC = () => {
                 {appliances.map(appliance => (
                     <div key={appliance.id} style={{ flex: '0 0 18rem', margin: '0.25rem' }}>
                         <ApplianceCard
+                            id={appliance.id}
                             makeModel={appliance.makeModel}
                             yearPurchased={appliance.yearPurchased}
                             purchasePrice={appliance.purchasePrice}
