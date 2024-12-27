@@ -7,6 +7,7 @@ import { SERVER_URL } from "@/pages/_app";
 
 interface Appliance {
   id: number;
+  applianceName: string;
   makeModel: string;
   yearPurchased: string;
   purchasePrice: string;
@@ -59,9 +60,10 @@ const AppliancePage: React.FC = () => {
               <Tab eventKey="main" title="Main">
                 <Card>
                   <Card.Body>
-                    <Card.Title>{appliance.makeModel}</Card.Title>
+                    <Card.Title>{appliance.applianceName}</Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">{appliance.type}</Card.Subtitle>
                     <Card.Text>
+                      <strong>Make + Model:</strong> {appliance.makeModel}<br />
                       <strong>Year Purchased:</strong> {appliance.yearPurchased}<br />
                       <strong>Purchase Price:</strong> {appliance.purchasePrice}<br />
                       <strong>Location:</strong> {appliance.location}
