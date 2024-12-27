@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Tabs, Tab } from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import MyNavbar from '../../components/Navbar';
 import { SERVER_URL } from "@/pages/_app";
@@ -55,24 +55,37 @@ const AppliancePage: React.FC = () => {
       <MyNavbar />
       <Row className="justify-content-center">
         <Col md={8}>
-          <Card>
-            <Card.Body>
-              <Card.Title>{appliance.makeModel}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{appliance.type}</Card.Subtitle>
-              <Card.Text>
-                <strong>Year Purchased:</strong> {appliance.yearPurchased}<br />
-                <strong>Purchase Price:</strong> {appliance.purchasePrice}<br />
-                <strong>Location:</strong> {appliance.location}
-              </Card.Text>
-              <Row>
-                <Col>
-                  <Button variant="danger" onClick={handleDelete} style={{ marginTop: '10px' }}>
-                    <i className="bi bi-trash"></i>
-                  </Button>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
+          <Tabs defaultActiveKey="main" id="appliance-tabs">
+            <Tab eventKey="main" title="Main">
+              <Card>
+                <Card.Body>
+                  <Card.Title>{appliance.makeModel}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">{appliance.type}</Card.Subtitle>
+                  <Card.Text>
+                    <strong>Year Purchased:</strong> {appliance.yearPurchased}<br />
+                    <strong>Purchase Price:</strong> {appliance.purchasePrice}<br />
+                    <strong>Location:</strong> {appliance.location}
+                  </Card.Text>
+                  <Row>
+                    <Col>
+                      <Button variant="danger" onClick={handleDelete} style={{ marginTop: '10px' }}>
+                        <i className="bi bi-trash"></i>
+                      </Button>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Tab>
+            <Tab eventKey="maintenance" title="Maintenance">
+              <div>Maintenance content goes here.</div>
+            </Tab>
+            <Tab eventKey="repairs" title="Repairs">
+              <div>Repairs content goes here.</div>
+            </Tab>
+            <Tab eventKey="documentation" title="Documentation">
+              <div>Documentation content goes here.</div>
+            </Tab>
+          </Tabs>
         </Col>
       </Row>
     </Container>
