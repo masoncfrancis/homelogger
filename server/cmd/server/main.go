@@ -164,6 +164,7 @@ func main() {
 
 		// Get the makeModel, yearPurchased, purchasePrice, location, and type from the body
 		var body struct {
+			ApplianceName string `json:"applianceName"`
 			MakeModel     string `json:"makeModel"`
 			YearPurchased string `json:"yearPurchased"`
 			PurchasePrice string `json:"purchasePrice"`
@@ -177,6 +178,7 @@ func main() {
 
 		// Add an appliance
 		appliance, err := database.AddAppliance(db, &models.Appliance{
+			ApplianceName: body.ApplianceName,
 			MakeModel:     body.MakeModel,
 			YearPurchased: body.YearPurchased,
 			PurchasePrice: body.PurchasePrice,

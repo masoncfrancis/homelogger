@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Container, Row} from 'react-bootstrap';
 import MyNavbar from '../components/Navbar';
 import BlankCard from '../components/BlankCard';
 import AddApplianceModal from '../components/AddApplianceModal';
 import ApplianceCard from '../components/ApplianceCard';
-import { SERVER_URL } from "@/pages/_app";
+import {SERVER_URL} from "@/pages/_app";
 
 const appliancesUrl = `${SERVER_URL}/appliances`;
 const appliancesAddUrl = `${SERVER_URL}/appliances/add`;
 
 interface Appliance {
     id: number;
+    applianceName: string;
     makeModel: string;
     yearPurchased: string;
     purchasePrice: string;
@@ -37,8 +38,8 @@ const AppliancesPage: React.FC = () => {
         setShowModal(false);
     };
 
-    const handleSaveAppliance = async (makeModel: string, yearPurchased: string, purchasePrice: string, location: string, type: string) => {
-        const newAppliance = { makeModel, yearPurchased, purchasePrice, location, type };
+    const handleSaveAppliance = async (applianceName: string, makeModel: string, yearPurchased: string, purchasePrice: string, location: string, type: string) => {
+        const newAppliance = {applianceName, makeModel, yearPurchased, purchasePrice, location, type};
         try {
             const response = await fetch(appliancesAddUrl, {
                 method: 'POST',
@@ -63,12 +64,14 @@ const AppliancesPage: React.FC = () => {
 
     return (
         <Container>
-            <MyNavbar />
-            <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', padding: '0' }}>
+            <MyNavbar/>
+            <Row style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', padding: '0'}}>
                 {appliances.map(appliance => (
-                    <div key={appliance.id} style={{ flex: '0 0 18rem', margin: '0.25rem' }}>
+                    console.log(appliance),
+                    <div key={appliance.id} style={{flex: '0 0 18rem', margin: '0.25rem'}}>
                         <ApplianceCard
                             id={appliance.id}
+                            applianceName={appliance.applianceName}
                             makeModel={appliance.makeModel}
                             yearPurchased={appliance.yearPurchased}
                             purchasePrice={appliance.purchasePrice}
@@ -77,8 +80,8 @@ const AppliancesPage: React.FC = () => {
                         />
                     </div>
                 ))}
-                <div style={{ flex: '0 0 18rem', margin: '0.25rem' }}>
-                    <BlankCard onClick={handleAddCardClick} />
+                <div style={{flex: '0 0 18rem', margin: '0.25rem'}}>
+                    <BlankCard onClick={handleAddCardClick}/>
                 </div>
             </Row>
             <AddApplianceModal

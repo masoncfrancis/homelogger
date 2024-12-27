@@ -7,6 +7,7 @@ import (
 type Appliance struct {
 	gorm.Model
 	ID            uint   `json:"id" gorm:"primaryKey"`
+	ApplianceName string `json:"applianceName" gorm:"not null"`
 	MakeModel     string `json:"makeModel" gorm:"not null"`
 	YearPurchased string `json:"yearPurchased" gorm:"not null"`
 	PurchasePrice string `json:"purchasePrice" gorm:"not null"`

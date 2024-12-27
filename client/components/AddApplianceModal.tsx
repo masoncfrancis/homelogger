@@ -4,10 +4,11 @@ import { Button, Form, Modal } from 'react-bootstrap';
 interface AddApplianceModalProps {
   show: boolean;
   handleClose: () => void;
-  handleSave: (makeModel: string, yearPurchased: string, purchasePrice: string, location: string, type: string) => void;
+  handleSave: (applianceName: string, makeModel: string, yearPurchased: string, purchasePrice: string, location: string, type: string) => void;
 }
 
 const AddApplianceModal: React.FC<AddApplianceModalProps> = ({ show, handleClose, handleSave }) => {
+  const [applianceName, setApplianceName] = React.useState('');
   const [makeModel, setMakeModel] = React.useState('');
   const [yearPurchased, setYearPurchased] = React.useState('');
   const [purchasePrice, setPurchasePrice] = React.useState('');
@@ -15,7 +16,7 @@ const AddApplianceModal: React.FC<AddApplianceModalProps> = ({ show, handleClose
   const [type, setType] = React.useState('');
 
   const handleSubmit = () => {
-    handleSave(makeModel, yearPurchased, purchasePrice, location, type);
+    handleSave(applianceName, makeModel, yearPurchased, purchasePrice, location, type);
     handleClose();
   };
 
@@ -26,6 +27,15 @@ const AddApplianceModal: React.FC<AddApplianceModalProps> = ({ show, handleClose
       </Modal.Header>
       <Modal.Body>
         <Form>
+          <Form.Group controlId="formApplianceName">
+            <Form.Label>Appliance name</Form.Label>
+            <Form.Control
+                type="text"
+                placeholder="Enter appliance name"
+                value={applianceName}
+                onChange={(e) => setApplianceName(e.target.value)}
+            />
+          </Form.Group>
           <Form.Group controlId="formMakeModel">
             <Form.Label>Make and Model</Form.Label>
             <Form.Control
