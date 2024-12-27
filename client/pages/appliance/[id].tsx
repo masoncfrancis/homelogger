@@ -22,9 +22,9 @@ const AppliancePage: React.FC = () => {
   useEffect(() => {
     if (id) {
       fetch(`${SERVER_URL}/appliances/${id}`)
-        .then(response => response.json())
-        .then(data => setAppliance(data))
-        .catch(error => console.error('Error fetching appliance:', error));
+          .then(response => response.json())
+          .then(data => setAppliance(data))
+          .catch(error => console.error('Error fetching appliance:', error));
     }
   }, [id]);
 
@@ -51,44 +51,47 @@ const AppliancePage: React.FC = () => {
   }
 
   return (
-    <Container>
-      <MyNavbar />
-      <Row className="justify-content-center">
-        <Col md={8}>
-          <Tabs defaultActiveKey="main" id="appliance-tabs">
-            <Tab eventKey="main" title="Main">
-              <Card>
-                <Card.Body>
-                  <Card.Title>{appliance.makeModel}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">{appliance.type}</Card.Subtitle>
-                  <Card.Text>
-                    <strong>Year Purchased:</strong> {appliance.yearPurchased}<br />
-                    <strong>Purchase Price:</strong> {appliance.purchasePrice}<br />
-                    <strong>Location:</strong> {appliance.location}
-                  </Card.Text>
-                  <Row>
-                    <Col>
-                      <Button variant="danger" onClick={handleDelete} style={{ marginTop: '10px' }}>
-                        <i className="bi bi-trash"></i>
-                      </Button>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Tab>
-            <Tab eventKey="maintenance" title="Maintenance">
-              <div>Maintenance content goes here.</div>
-            </Tab>
-            <Tab eventKey="repairs" title="Repairs">
-              <div>Repairs content goes here.</div>
-            </Tab>
-            <Tab eventKey="documentation" title="Documentation">
-              <div>Documentation content goes here.</div>
-            </Tab>
-          </Tabs>
-        </Col>
-      </Row>
-    </Container>
+      <Container>
+        <MyNavbar />
+        <Row className="justify-content-center">
+          <Col md={8}>
+            <Tabs defaultActiveKey="main" id="appliance-tabs">
+              <Tab eventKey="main" title="Main">
+                <Card>
+                  <Card.Body>
+                    <Card.Title>{appliance.makeModel}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{appliance.type}</Card.Subtitle>
+                    <Card.Text>
+                      <strong>Year Purchased:</strong> {appliance.yearPurchased}<br />
+                      <strong>Purchase Price:</strong> {appliance.purchasePrice}<br />
+                      <strong>Location:</strong> {appliance.location}
+                    </Card.Text>
+                    <Row>
+                      <Col>
+                        <Button variant="danger" onClick={handleDelete} style={{ marginTop: '10px' }}>
+                          <i className="bi bi-trash"></i>
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Tab>
+              <Tab eventKey="maintenance" title="Maintenance">
+                <div>Maintenance content goes here.</div>
+              </Tab>
+              <Tab eventKey="repairs" title="Repairs">
+                <div>Repairs content goes here.</div>
+              </Tab>
+              <Tab eventKey="documentation" title="Documentation">
+                <div>Documentation content goes here.</div>
+              </Tab>
+            </Tabs>
+            <Button variant="secondary" onClick={() => router.back()} style={{ marginTop: '10px' }}>
+              Back
+            </Button>
+          </Col>
+        </Row>
+      </Container>
   );
 };
 
