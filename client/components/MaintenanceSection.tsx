@@ -40,7 +40,13 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
     useEffect(() => {
         const fetchMaintenanceRecords = async () => {
             try {
-                const response = await fetch(`${SERVER_URL}/maintenance`);
+                const queryParams = new URLSearchParams({
+                    applianceId: applianceId?.toString() || '',
+                    referenceType,
+                    spaceType: spaceType || ''
+                }).toString();
+
+                const response = await fetch(`${SERVER_URL}/maintenance?${queryParams}`);
                 const data = await response.json();
                 setMaintenanceRecords(data);
             } catch (error) {
@@ -49,7 +55,7 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
         };
 
         fetchMaintenanceRecords();
-    }, []);
+    }, [applianceId, referenceType, spaceType]);
 
     const totalCost = maintenanceRecords.reduce((sum, record) => sum + record.cost, 0);
 

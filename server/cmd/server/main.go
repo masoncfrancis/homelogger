@@ -248,7 +248,20 @@ func main() {
 
 	// Maintenance endpoints
 	app.Get("/maintenance", func(c *fiber.Ctx) error {
-		maintenances, err := database.GetMaintenances(db)
+		applianceId := c.Query("applianceId")
+		referenceType := c.Query("referenceType")
+		spaceType := c.Query("spaceType")
+
+		if applianceId == "" || referenceType == "" || spaceType == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameters")
+		}
+
+		applianceIdUint, err := strconv.ParseUint(applianceId, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid applianceId format")
+		}
+
+		maintenances, err := database.GetMaintenances(db, uint(applianceIdUint), referenceType, spaceType)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Error getting maintenance records: " + err.Error())
 		}

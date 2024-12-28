@@ -5,15 +5,25 @@ import (
 	"gorm.io/gorm"
 )
 
-// GetMaintenances gets all maintenance records
-func GetMaintenances(db *gorm.DB) ([]models.Maintenance, error) {
+// GetMaintenances gets maintenance records filtered by applianceId, referenceType, and spaceType
+func GetMaintenances(db *gorm.DB, applianceId uint, referenceType, spaceType string) ([]models.Maintenance, error) {
 	var maintenances []models.Maintenance
-	result := db.Find(&maintenances)
-	if result.Error != nil {
-		return []models.Maintenance{}, result.Error
+	if referenceType == "Space" {
+		result := db.Where("reference_type = ? AND space_type = ?", referenceType, spaceType).Find(&maintenances)
+		if result.Error != nil {
+			return []models.Maintenance{}, result.Error
+		}
+
+		return maintenances, nil
+	} else {
+		result := db.Where("appliance_id = ? AND reference_type = ? AND space_type = ?", applianceId, referenceType, spaceType).Find(&maintenances)
+		if result.Error != nil {
+			return []models.Maintenance{}, result.Error
+		}
+
+		return maintenances, nil
 	}
 
-	return maintenances, nil
 }
 
 // AddMaintenance creates a new maintenance record
