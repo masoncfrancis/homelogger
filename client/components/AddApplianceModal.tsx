@@ -79,7 +79,7 @@ const AddApplianceModal: React.FC<AddApplianceModalProps> = ({ show, handleClose
               value={type}
               onChange={(e) => setType(e.target.value)}
             >
-              <option value="">Select type</option>
+              <option disabled={true} value="">Select type...</option>
               <option value="Washer">Washer</option>
               <option value="Dryer">Dryer</option>
               <option value="Refrigerator">Refrigerator</option>
