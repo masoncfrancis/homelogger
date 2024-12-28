@@ -18,7 +18,9 @@ const MyNavbar: React.FC = () => {
           <Nav.Link as={Link} href="/hvac" active={router.pathname === '/hvac'}>HVAC</Nav.Link>
           <Nav.Link as={Link} href="/electrical" active={router.pathname === '/electrical'}>Electrical</Nav.Link>
           <Nav.Link as={Link} href="/appliances" active={router.pathname === '/appliances'}>Appliances</Nav.Link>
-          <Nav.Link as={Link} href="/exterior" active={router.pathname === '/exterior'}>Exterior</Nav.Link>
+          <Nav.Link as={Link} href="/buildingexterior" active={router.pathname === '/buildingexterior'}>Building Exterior</Nav.Link>
+          <Nav.Link as={Link} href="/buildinginterior" active={router.pathname === '/buildinginterior'}>Building Interior</Nav.Link>
+          <Nav.Link as={Link} href="/yard" active={router.pathname === '/yard'}>Yard</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
