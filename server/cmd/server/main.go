@@ -246,5 +246,51 @@ func main() {
 		return c.SendString("Appliance deleted")
 	})
 
+	// Maintenance endpoints
+	app.Get("/maintenance", func(c *fiber.Ctx) error {
+		maintenances, err := database.GetMaintenances(db)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error getting maintenance records: " + err.Error())
+		}
+		return c.JSON(maintenances)
+	})
+
+	app.Post("/maintenance/add", func(c *fiber.Ctx) error {
+		var maintenance models.Maintenance
+		if err := c.BodyParser(&maintenance); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
+		}
+		newMaintenance, err := database.AddMaintenance(db, &maintenance)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error adding maintenance record: " + err.Error())
+		}
+		return c.Status(fiber.StatusCreated).JSON(newMaintenance)
+	})
+
+	app.Get("/maintenance/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		maintenance, err := database.GetMaintenance(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString("Maintenance record not found: " + err.Error())
+		}
+		return c.JSON(maintenance)
+	})
+
+	app.Delete("/maintenance/delete/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		if err := database.DeleteMaintenance(db, uint(idUint)); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error deleting maintenance record: " + err.Error())
+		}
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
 	app.Listen(":8083")
 }
