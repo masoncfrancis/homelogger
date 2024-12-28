@@ -162,10 +162,12 @@ func main() {
 			return c.SendString("Error connecting GORM to db")
 		}
 
-		// Get the makeModel, yearPurchased, purchasePrice, location, and type from the body
+		// Get the appliance details from the body
 		var body struct {
 			ApplianceName string `json:"applianceName"`
-			MakeModel     string `json:"makeModel"`
+			Manufacturer  string `json:"manufacturer"`
+			ModelNumber   string `json:"modelNumber"`
+			SerialNumber  string `json:"serialNumber"`
 			YearPurchased string `json:"yearPurchased"`
 			PurchasePrice string `json:"purchasePrice"`
 			Location      string `json:"location"`
@@ -179,7 +181,9 @@ func main() {
 		// Add an appliance
 		appliance, err := database.AddAppliance(db, &models.Appliance{
 			ApplianceName: body.ApplianceName,
-			MakeModel:     body.MakeModel,
+			Manufacturer:  body.Manufacturer,
+			ModelNumber:   body.ModelNumber,
+			SerialNumber:  body.SerialNumber,
 			YearPurchased: body.YearPurchased,
 			PurchasePrice: body.PurchasePrice,
 			Location:      body.Location,

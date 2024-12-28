@@ -9,7 +9,9 @@ import {SERVER_URL} from "@/pages/_app";
 interface Appliance {
     id: number;
     applianceName: string;
-    makeModel: string;
+    manufacturer: string;
+    modelNumber: string;
+    serialNumber: string;
     yearPurchased: string;
     purchasePrice: string;
     location: string;
@@ -65,7 +67,9 @@ const AppliancePage: React.FC = () => {
                                     <Card.Subtitle className="mb-2 text-muted">{appliance.type}</Card.Subtitle>
                                     <Card.Text>
                                         <strong>Location:</strong> {appliance.location}<br/>
-                                        <strong>Make + Model:</strong> {appliance.makeModel}<br/>
+                                        <strong>Manufacturer:</strong> {appliance.manufacturer}<br/>
+                                        <strong>Model Number:</strong> {appliance.modelNumber}<br/>
+                                        <strong>Serial Number:</strong> {appliance.serialNumber}<br/>
                                         <strong>Year Purchased:</strong> {appliance.yearPurchased}<br/>
                                         <strong>Purchase Price:</strong> {appliance.purchasePrice}<br/>
                                     </Card.Text>

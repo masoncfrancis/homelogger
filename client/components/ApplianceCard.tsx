@@ -5,7 +5,9 @@ import Link from 'next/link';
 interface ApplianceCardProps {
     id: number;
     applianceName: string;
-    makeModel: string;
+    manufacturer: string;
+    modelNumber: string;
+    serialNumber: string;
     yearPurchased: string;
     purchasePrice: string;
     location: string;
@@ -15,7 +17,9 @@ interface ApplianceCardProps {
 const ApplianceCard: React.FC<ApplianceCardProps> = ({
                                                          id,
                                                          applianceName,
-                                                         makeModel,
+                                                         manufacturer,
+                                                         modelNumber,
+                                                         serialNumber,
                                                          yearPurchased,
                                                          purchasePrice,
                                                          location,
