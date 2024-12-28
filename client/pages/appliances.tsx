@@ -65,6 +65,7 @@ const AppliancesPage: React.FC = () => {
     return (
         <Container>
             <MyNavbar/>
+            <h4 id='maintext'>Appliances</h4>
             <Row style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', padding: '0'}}>
                 {appliances.map(appliance => (
                     console.log(appliance),
