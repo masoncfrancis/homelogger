@@ -196,6 +196,64 @@ func main() {
 		return c.JSON(appliance)
 	})
 
+	// Update an appliance
+	app.Put("/appliances/update/:id", func(c *fiber.Ctx) error {
+		// Connect to gorm
+		db, err := database.ConnectGorm()
+		if err != nil {
+			return c.SendString("Error connecting GORM to db")
+		}
+
+		// Get the id from the URL
+		id := c.Params("id")
+
+		// Convert id to uint
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.SendString("Invalid ID format")
+		}
+
+		// Get the appliance details from the body
+		var body struct {
+			ApplianceName string `json:"applianceName"`
+			Manufacturer  string `json:"manufacturer"`
+			ModelNumber   string `json:"modelNumber"`
+			SerialNumber  string `json:"serialNumber"`
+			YearPurchased string `json:"yearPurchased"`
+			PurchasePrice string `json:"purchasePrice"`
+			Location      string `json:"location"`
+			Type          string `json:"type"`
+		}
+		err = c.BodyParser(&body)
+		if err != nil {
+			return c.SendString("Error parsing body")
+		}
+
+		// Get the existing appliance
+		appliance, err := database.GetAppliance(db, uint(idUint))
+		if err != nil {
+			return c.SendString("Error getting appliance:" + err.Error())
+		}
+
+		// Update the appliance details
+		appliance.ApplianceName = body.ApplianceName
+		appliance.Manufacturer = body.Manufacturer
+		appliance.ModelNumber = body.ModelNumber
+		appliance.SerialNumber = body.SerialNumber
+		appliance.YearPurchased = body.YearPurchased
+		appliance.PurchasePrice = body.PurchasePrice
+		appliance.Location = body.Location
+		appliance.Type = body.Type
+
+		// Save the updated appliance
+		updatedAppliance, err := database.UpdateAppliance(db, appliance)
+		if err != nil {
+			return c.SendString("Error updating appliance:" + err.Error())
+		}
+
+		return c.JSON(updatedAppliance)
+	})
+
 	app.Get("/appliances/:id", func(c *fiber.Ctx) error {
 		// Connect to gorm
 		db, err := database.ConnectGorm()

@@ -26,6 +26,16 @@ func AddAppliance(db *gorm.DB, appliance *models.Appliance) (*models.Appliance, 
 	return appliance, nil
 }
 
+// UpdateAppliance updates an appliance, saving the changes to an existing appliance by its ID
+func UpdateAppliance(db *gorm.DB, appliance *models.Appliance) (*models.Appliance, error) {
+	result := db.Save(appliance)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return appliance, nil
+}
+
 // GetAppliance gets an appliance by ID
 func GetAppliance(db *gorm.DB, id uint) (*models.Appliance, error) {
 	var appliance models.Appliance

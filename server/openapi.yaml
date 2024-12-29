@@ -234,6 +234,92 @@ paths:
                   type:
                     type: string
                     example: "Washer"
+  /appliances/update/{id}:
+    put:
+      summary: Update an appliance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applianceName:
+                  type: string
+                  example: "Samsung Washer"
+                manufacturer:
+                  type: string
+                  example: "Samsung"
+                modelNumber:
+                  type: string
+                  example: "SW1234"
+                serialNumber:
+                  type: string
+                  example: "SN123456789"
+                yearPurchased:
+                  type: string
+                  example: "2020"
+                purchasePrice:
+                  type: string
+                  example: "500"
+                location:
+                  type: string
+                  example: "Laundry Room"
+                type:
+                  type: string
+                  example: "Washer"
+      responses:
+        '200':
+          description: Appliance updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  applianceName:
+                    type: string
+                    example: "Samsung Washer"
+                  manufacturer:
+                    type: string
+                    example: "Samsung"
+                  modelNumber:
+                    type: string
+                    example: "SW1234"
+                  serialNumber:
+                    type: string
+                    example: "SN123456789"
+                  yearPurchased:
+                    type: string
+                    example: "2020"
+                  purchasePrice:
+                    type: string
+                    example: "500"
+                  location:
+                    type: string
+                    example: "Laundry Room"
+                  type:
+                    type: string
+                    example: "Washer"
+        '404':
+          description: Appliance not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Appliance not found"
   /appliances/delete/{id}:
     delete:
       summary: Delete an appliance
