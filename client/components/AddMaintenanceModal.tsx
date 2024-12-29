@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { SERVER_URL } from "@/pages/_app";
-import { MaintenanceRecord, ReferenceType, SpaceType } from './MaintenanceSection';
+import React, {useEffect, useState} from 'react';
+import {Button, Form, Modal} from 'react-bootstrap';
+import {SERVER_URL} from "@/pages/_app";
+import {MaintenanceRecord, ReferenceType, SpaceType} from './MaintenanceSection';
 
 interface AddMaintenanceModalProps {
     show: boolean;
@@ -13,20 +13,28 @@ interface AddMaintenanceModalProps {
 }
 
 const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
-    show,
-    handleClose,
-    handleSave,
-    applianceId,
-    referenceType,
-    spaceType
-}) => {
+                                                                     show,
+                                                                     handleClose,
+                                                                     handleSave,
+                                                                     applianceId,
+                                                                     referenceType,
+                                                                     spaceType
+                                                                 }) => {
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [cost, setCost] = useState(0);
     const [notes, setNotes] = useState('');
 
+    useEffect(() => {
+        if (!show) {
+            setDescription('');
+            setDate('');
+            setCost(0);
+            setNotes('');
+        }
+    }, [show]);
+
     const handleSubmit = async () => {
-        // Standardize the date format to ISO 8601
         const standardizedDate = new Date(date).toISOString().split('T')[0];
 
         const newMaintenance: MaintenanceRecord = {

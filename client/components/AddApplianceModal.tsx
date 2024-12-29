@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal} from 'react-bootstrap';
 
 interface AddApplianceModalProps {
@@ -8,14 +8,27 @@ interface AddApplianceModalProps {
 }
 
 const AddApplianceModal: React.FC<AddApplianceModalProps> = ({show, handleClose, handleSave}) => {
-    const [applianceName, setApplianceName] = React.useState('');
-    const [manufacturer, setManufacturer] = React.useState('');
-    const [modelNumber, setModelNumber] = React.useState('');
-    const [serialNumber, setSerialNumber] = React.useState('');
-    const [yearPurchased, setYearPurchased] = React.useState('');
-    const [purchasePrice, setPurchasePrice] = React.useState('');
-    const [location, setLocation] = React.useState('');
-    const [type, setType] = React.useState('');
+    const [applianceName, setApplianceName] = useState('');
+    const [manufacturer, setManufacturer] = useState('');
+    const [modelNumber, setModelNumber] = useState('');
+    const [serialNumber, setSerialNumber] = useState('');
+    const [yearPurchased, setYearPurchased] = useState('');
+    const [purchasePrice, setPurchasePrice] = useState('');
+    const [location, setLocation] = useState('');
+    const [type, setType] = useState('');
+
+    useEffect(() => {
+        if (!show) {
+            setApplianceName('');
+            setManufacturer('');
+            setModelNumber('');
+            setSerialNumber('');
+            setYearPurchased('');
+            setPurchasePrice('');
+            setLocation('');
+            setType('');
+        }
+    }, [show]);
 
     const handleSubmit = () => {
         handleSave(applianceName, manufacturer, modelNumber, serialNumber, yearPurchased, purchasePrice, location, type);
