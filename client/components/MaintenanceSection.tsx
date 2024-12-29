@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Card, Table} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import {SERVER_URL} from "@/pages/_app";
-import AddMaintenanceModal from './AddMaintenanceModal';
-
+import AddMaintenanceModal from '@/components/AddMaintenanceModal';
+import ShowMaintenanceModal from "@/components/ShowMaintenanceModal";
 
 export enum ReferenceType {
     Appliance = 'Appliance',
@@ -39,7 +39,9 @@ interface MaintenanceProps {
 
 const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceType, spaceType}) => {
     const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([]);
-    const [showModal, setShowModal] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState<MaintenanceRecord | null>(null);
 
     useEffect(() => {
         const fetchMaintenanceRecords = async () => {
@@ -61,10 +63,21 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
         fetchMaintenanceRecords();
     }, [applianceId, referenceType, spaceType]);
 
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
+    const handleShowAddModal = () => setShowAddModal(true);
+    const handleCloseAddModal = () => setShowAddModal(false);
     const handleSaveMaintenance = (newMaintenance: MaintenanceRecord) => {
         setMaintenanceRecords([...maintenanceRecords, newMaintenance]);
+    };
+
+    const handleRowClick = (record: MaintenanceRecord) => {
+        setSelectedRecord(record);
+        setShowViewModal(true);
+    };
+
+    const handleCloseViewModal = () => setShowViewModal(false);
+
+    const handleDeleteMaintenance = (id: number) => {
+        setMaintenanceRecords(maintenanceRecords.filter(record => record.id !== id));
     };
 
     const totalCost = maintenanceRecords.reduce((sum, record) => sum + record.cost, 0);
@@ -87,7 +100,7 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
                         </tr>
                     ) : (
                         maintenanceRecords.map(record => (
-                            <tr key={record.id}>
+                            <tr key={record.id} onClick={() => handleRowClick(record)} style={{cursor: 'pointer'}}>
                                 <td>{record.description}</td>
                                 <td>{record.cost}</td>
                                 <td>{record.date}</td>
@@ -104,18 +117,26 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
                     fontWeight: 'bold'
                 }}>
                     <i className="bi bi-plus-square-fill" style={{fontSize: '2rem', cursor: "pointer"}}
-                       onClick={handleShowModal}></i>
+                       onClick={handleShowAddModal}></i>
                     <div>Total Maintenance Cost: ${totalCost}</div>
                 </div>
             </Card.Body>
             <AddMaintenanceModal
-                show={showModal}
-                handleClose={handleCloseModal}
+                show={showAddModal}
+                handleClose={handleCloseAddModal}
                 handleSave={handleSaveMaintenance}
                 applianceId={applianceId}
                 referenceType={referenceType}
                 spaceType={spaceType || SpaceType.NotApplicable}
             />
+            {selectedRecord && (
+                <ShowMaintenanceModal
+                    show={showViewModal}
+                    handleClose={handleCloseViewModal}
+                    maintenanceRecord={selectedRecord}
+                    handleDeleteMaintenance={handleDeleteMaintenance}
+                />
+            )}
         </Card>
     );
 };

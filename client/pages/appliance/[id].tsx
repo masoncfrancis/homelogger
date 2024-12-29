@@ -94,7 +94,7 @@ const AppliancePage: React.FC = () => {
                                     </Card.Text>
                                     <Row>
                                         <Col>
-                                            <Button style={{marginTop: '10px'}} onClick={handleShowEditModal}>
+                                            <Button variant="secondary" style={{marginTop: '10px'}} onClick={handleShowEditModal}>
                                                 <i className="bi bi-pencil-fill"></i>
                                             </Button>
                                             <Button variant="danger" onClick={handleDelete} style={{marginTop: '10px', float: 'right'}}>
