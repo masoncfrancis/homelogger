@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Card, Table} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import {SERVER_URL} from "@/pages/_app";
+import AddMaintenanceModal from './AddMaintenanceModal';
+
 
 export enum ReferenceType {
     Appliance = 'Appliance',
@@ -18,14 +20,14 @@ export enum SpaceType {
     NotApplicable = 'NotApplicable'
 }
 
-interface MaintenanceRecord {
+export interface MaintenanceRecord {
     id: number;
     description: string;
     date: string;
     cost: number;
     notes: string;
-    spaceType: string;
-    referenceType: string;
+    spaceType: SpaceType;
+    referenceType: ReferenceType;
     applianceId: number;
 }
 
@@ -37,6 +39,7 @@ interface MaintenanceProps {
 
 const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceType, spaceType}) => {
     const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([]);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchMaintenanceRecords = async () => {
@@ -57,6 +60,12 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
 
         fetchMaintenanceRecords();
     }, [applianceId, referenceType, spaceType]);
+
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+    const handleSaveMaintenance = (newMaintenance: MaintenanceRecord) => {
+        setMaintenanceRecords([...maintenanceRecords, newMaintenance]);
+    };
 
     const totalCost = maintenanceRecords.reduce((sum, record) => sum + record.cost, 0);
 
@@ -94,10 +103,19 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
                     marginTop: '10px',
                     fontWeight: 'bold'
                 }}>
-                    <i className="bi bi-plus-square-fill" style={{fontSize: '2rem', cursor: "pointer"}}></i>
+                    <i className="bi bi-plus-square-fill" style={{fontSize: '2rem', cursor: "pointer"}}
+                       onClick={handleShowModal}></i>
                     <div>Total Maintenance Cost: ${totalCost}</div>
                 </div>
             </Card.Body>
+            <AddMaintenanceModal
+                show={showModal}
+                handleClose={handleCloseModal}
+                handleSave={handleSaveMaintenance}
+                applianceId={applianceId}
+                referenceType={referenceType}
+                spaceType={spaceType || SpaceType.NotApplicable}
+            />
         </Card>
     );
 };
