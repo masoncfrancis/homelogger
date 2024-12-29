@@ -3,18 +3,19 @@ import {Card, Table} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import {SERVER_URL} from "@/pages/_app";
 
-enum ReferenceType {
+export enum ReferenceType {
     Appliance = 'Appliance',
     Space = 'Space'
 }
 
-enum SpaceType {
+export enum SpaceType {
     BuildingExterior = 'BuildingExterior',
     BuildingInterior = 'BuildingInterior',
     Electrical = 'Electrical',
     HVAC = 'HVAC',
     Plumbing = 'Plumbing',
-    Yard = 'Yard'
+    Yard = 'Yard',
+    NotApplicable = 'NotApplicable'
 }
 
 interface MaintenanceRecord {

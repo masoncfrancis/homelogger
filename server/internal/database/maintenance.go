@@ -16,7 +16,7 @@ func GetMaintenances(db *gorm.DB, applianceId uint, referenceType, spaceType str
 
 		return maintenances, nil
 	} else {
-		result := db.Where("appliance_id = ? AND reference_type = ? AND space_type = ?", applianceId, referenceType, spaceType).Find(&maintenances)
+		result := db.Where("appliance_id = ? AND reference_type = ?", applianceId, referenceType).Find(&maintenances)
 		if result.Error != nil {
 			return []models.Maintenance{}, result.Error
 		}

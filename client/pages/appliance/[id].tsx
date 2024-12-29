@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {Button, Card, Col, Container, Row, Tab, Tabs} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
-import MaintenanceSection from '../../components/MaintenanceSection';
+import MaintenanceSection, {ReferenceType, SpaceType} from '../../components/MaintenanceSection';
 import MyNavbar from '../../components/Navbar';
 import {SERVER_URL} from "@/pages/_app";
 
@@ -84,7 +84,7 @@ const AppliancePage: React.FC = () => {
                             </Card>
                         </Tab>
                         <Tab eventKey="maintenance" title="Maintenance">
-                            <MaintenanceSection maintenanceData="Maintenance content goes here."/>
+                            <MaintenanceSection applianceId={appliance.id} referenceType={ReferenceType.Appliance} spaceType={SpaceType.NotApplicable}/>
                         </Tab>
                         <Tab eventKey="repairs" title="Repairs">
                             <div>Repairs content goes here.</div>
