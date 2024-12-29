@@ -5,6 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import MaintenanceSection, {ReferenceType, SpaceType} from '../../components/MaintenanceSection';
 import MyNavbar from '../../components/Navbar';
 import {SERVER_URL} from "@/pages/_app";
+import EditApplianceModal from '../../components/EditApplianceModal';
 
 interface Appliance {
     id: number;
@@ -22,6 +23,7 @@ const AppliancePage: React.FC = () => {
     const router = useRouter();
     const {id} = router.query;
     const [appliance, setAppliance] = useState<Appliance | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -50,6 +52,23 @@ const AppliancePage: React.FC = () => {
         }
     };
 
+    const handleShowEditModal = () => setShowEditModal(true);
+    const handleCloseEditModal = () => setShowEditModal(false);
+
+    const handleSaveAppliance = (id: number, applianceName: string, manufacturer: string, modelNumber: string, serialNumber: string, yearPurchased: string, purchasePrice: string, location: string, type: string) => {
+        setAppliance({
+            id,
+            applianceName,
+            manufacturer,
+            modelNumber,
+            serialNumber,
+            yearPurchased,
+            purchasePrice,
+            location,
+            type
+        });
+    };
+
     if (!appliance) {
         return <div>Loading...</div>;
     }
@@ -75,7 +94,10 @@ const AppliancePage: React.FC = () => {
                                     </Card.Text>
                                     <Row>
                                         <Col>
-                                            <Button variant="danger" onClick={handleDelete} style={{marginTop: '10px'}}>
+                                            <Button style={{marginTop: '10px'}} onClick={handleShowEditModal}>
+                                                <i className="bi bi-pencil-fill"></i>
+                                            </Button>
+                                            <Button variant="danger" onClick={handleDelete} style={{marginTop: '10px', float: 'right'}}>
                                                 <i className="bi bi-trash"></i>
                                             </Button>
                                         </Col>
@@ -84,7 +106,8 @@ const AppliancePage: React.FC = () => {
                             </Card>
                         </Tab>
                         <Tab eventKey="maintenance" title="Maintenance">
-                            <MaintenanceSection applianceId={appliance.id} referenceType={ReferenceType.Appliance} spaceType={SpaceType.NotApplicable}/>
+                            <MaintenanceSection applianceId={appliance.id} referenceType={ReferenceType.Appliance}
+                                                spaceType={SpaceType.NotApplicable}/>
                         </Tab>
                         <Tab eventKey="repairs" title="Repairs">
                             <div>Repairs content goes here.</div>
@@ -98,6 +121,12 @@ const AppliancePage: React.FC = () => {
                     </Button>
                 </Col>
             </Row>
+            <EditApplianceModal
+                show={showEditModal}
+                handleClose={handleCloseEditModal}
+                handleSave={handleSaveAppliance}
+                appliance={appliance}
+            />
         </Container>
     );
 };
