@@ -30,6 +30,7 @@ const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
         const standardizedDate = new Date(date).toISOString().split('T')[0];
 
         const newMaintenance: MaintenanceRecord = {
+            id: 0,
             description,
             date: standardizedDate,
             cost,
