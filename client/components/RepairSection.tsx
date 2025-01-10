@@ -2,15 +2,15 @@ import React, {useEffect, useState} from 'react';
 import {Card, Table} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import {SERVER_URL} from "@/pages/_app";
-import AddMaintenanceModal from '@/components/AddMaintenanceModal';
-import ShowMaintenanceModal from "@/components/ShowMaintenanceModal";
+import AddRepairModal from '@/components/AddRepairModal';
+import ShowRepairModal from "@/components/ShowRepairModal";
 
-export enum MaintenanceReferenceType {
+export enum RepairReferenceType {
     Appliance = 'Appliance',
     Space = 'Space'
 }
 
-export enum MaintenanceSpaceType {
+export enum RepairSpaceType {
     BuildingExterior = 'BuildingExterior',
     BuildingInterior = 'BuildingInterior',
     Electrical = 'Electrical',
@@ -20,31 +20,31 @@ export enum MaintenanceSpaceType {
     NotApplicable = 'NotApplicable'
 }
 
-export interface MaintenanceRecord {
+export interface RepairRecord {
     id: number;
     description: string;
     date: string;
     cost: number;
     notes: string;
-    spaceType: MaintenanceSpaceType;
-    referenceType: MaintenanceReferenceType;
+    spaceType: RepairSpaceType;
+    referenceType: RepairReferenceType;
     applianceId: number;
 }
 
-interface MaintenanceProps {
+interface RepairProps {
     applianceId?: number;
-    referenceType: MaintenanceReferenceType;
-    spaceType?: MaintenanceSpaceType;
+    referenceType: RepairReferenceType;
+    spaceType?: RepairSpaceType;
 }
 
-const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceType, spaceType}) => {
-    const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([]);
+const RepairSection: React.FC<RepairProps> = ({applianceId, referenceType, spaceType}) => {
+    const [repairRecords, setRepairRecords] = useState<RepairRecord[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState<MaintenanceRecord | null>(null);
+    const [selectedRecord, setSelectedRecord] = useState<RepairRecord | null>(null);
 
     useEffect(() => {
-        const fetchMaintenanceRecords = async () => {
+        const fetchRepairRecords = async () => {
             try {
                 const queryParams = new URLSearchParams({
                     applianceId: applianceId?.toString() || '',
@@ -54,33 +54,33 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
 
                 const response = await fetch(`${SERVER_URL}/maintenance?${queryParams}`);
                 const data = await response.json();
-                setMaintenanceRecords(data);
+                setRepairRecords(data);
             } catch (error) {
-                console.error('Error fetching maintenance records:', error);
+                console.error('Error fetching repair records:', error);
             }
         };
 
-        fetchMaintenanceRecords();
+        fetchRepairRecords();
     }, [applianceId, referenceType, spaceType]);
 
     const handleShowAddModal = () => setShowAddModal(true);
     const handleCloseAddModal = () => setShowAddModal(false);
-    const handleSaveMaintenance = (newMaintenance: MaintenanceRecord) => {
-        setMaintenanceRecords([...maintenanceRecords, newMaintenance]);
+    const handleSaveRepair = (newRepair: RepairRecord) => {
+        setRepairRecords([...repairRecords, newRepair]);
     };
 
-    const handleRowClick = (record: MaintenanceRecord) => {
+    const handleRowClick = (record: RepairRecord) => {
         setSelectedRecord(record);
         setShowViewModal(true);
     };
 
     const handleCloseViewModal = () => setShowViewModal(false);
 
-    const handleDeleteMaintenance = (id: number) => {
-        setMaintenanceRecords(maintenanceRecords.filter(record => record.id !== id));
+    const handleDeleteRepair = (id: number) => {
+        setRepairRecords(repairRecords.filter(record => record.id !== id));
     };
 
-    const totalCost = maintenanceRecords.reduce((sum, record) => sum + record.cost, 0);
+    const totalCost = repairRecords.reduce((sum, record) => sum + record.cost, 0);
 
     return (
         <Card>
@@ -94,12 +94,12 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
                     </tr>
                     </thead>
                     <tbody>
-                    {maintenanceRecords.length === 0 ? (
+                    {repairRecords.length === 0 ? (
                         <tr>
-                            <td colSpan={3} style={{textAlign: 'center'}}>No maintenance has been recorded</td>
+                            <td colSpan={3} style={{textAlign: 'center'}}>No repairs have been recorded</td>
                         </tr>
                     ) : (
-                        maintenanceRecords.map(record => (
+                        repairRecords.map(record => (
                             <tr key={record.id} onClick={() => handleRowClick(record)} style={{cursor: 'pointer'}}>
                                 <td>{record.description}</td>
                                 <td>{record.cost}</td>
@@ -118,27 +118,27 @@ const MaintenanceSection: React.FC<MaintenanceProps> = ({applianceId, referenceT
                 }}>
                     <i className="bi bi-plus-square-fill" style={{fontSize: '2rem', cursor: "pointer"}}
                        onClick={handleShowAddModal}></i>
-                    <div>Total Maintenance Cost: ${totalCost}</div>
+                    <div>Total Repair Cost: ${totalCost}</div>
                 </div>
             </Card.Body>
-            <AddMaintenanceModal
+            <AddRepairModal
                 show={showAddModal}
                 handleClose={handleCloseAddModal}
-                handleSave={handleSaveMaintenance}
+                handleSave={handleSaveRepair}
                 applianceId={applianceId}
                 referenceType={referenceType}
-                spaceType={spaceType || MaintenanceSpaceType.NotApplicable}
+                spaceType={spaceType || RepairSpaceType.NotApplicable}
             />
             {selectedRecord && (
-                <ShowMaintenanceModal
+                <ShowRepairModal
                     show={showViewModal}
                     handleClose={handleCloseViewModal}
-                    maintenanceRecord={selectedRecord}
-                    handleDeleteMaintenance={handleDeleteMaintenance}
+                    repairRecord={selectedRecord}
+                    handleDeleteRepair={handleDeleteRepair}
                 />
             )}
         </Card>
     );
 };
 
-export default MaintenanceSection;
+export default RepairSection;

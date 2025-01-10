@@ -2,10 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {Button, Card, Col, Container, Row, Tab, Tabs} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
-import MaintenanceSection, {ReferenceType, SpaceType} from '../../components/MaintenanceSection';
-import MyNavbar from '../../components/Navbar';
+import MaintenanceSection, {MaintenanceReferenceType, MaintenanceSpaceType} from '@/components/MaintenanceSection';
+import RepairSection, {RepairReferenceType, RepairSpaceType} from '@/components/RepairSection';
+import MyNavbar from '@/components/Navbar';
 import {SERVER_URL} from "@/pages/_app";
-import EditApplianceModal from '../../components/EditApplianceModal';
+import EditApplianceModal from '@/components/EditApplianceModal';
 
 interface Appliance {
     id: number;
@@ -106,11 +107,12 @@ const AppliancePage: React.FC = () => {
                             </Card>
                         </Tab>
                         <Tab eventKey="maintenance" title="Maintenance">
-                            <MaintenanceSection applianceId={appliance.id} referenceType={ReferenceType.Appliance}
-                                                spaceType={SpaceType.NotApplicable}/>
+                            <MaintenanceSection applianceId={appliance.id} referenceType={MaintenanceReferenceType.Appliance}
+                                                spaceType={MaintenanceSpaceType.NotApplicable}/>
                         </Tab>
                         <Tab eventKey="repairs" title="Repairs">
-                            <div>Repairs content goes here.</div>
+                            <RepairSection applianceId={appliance.id} referenceType={RepairReferenceType.Appliance}
+                                                spaceType={RepairSpaceType.NotApplicable}/>
                         </Tab>
                         <Tab eventKey="documentation" title="Documentation">
                             <div>Documentation content goes here.</div>

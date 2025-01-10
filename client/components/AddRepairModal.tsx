@@ -1,25 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal} from 'react-bootstrap';
 import {SERVER_URL} from "@/pages/_app";
-import {MaintenanceRecord, MaintenanceReferenceType, MaintenanceSpaceType} from './MaintenanceSection';
+import {RepairRecord, RepairReferenceType, RepairSpaceType} from './RepairSection';
 
-interface AddMaintenanceModalProps {
+interface AddRepairModalProps {
     show: boolean;
     handleClose: () => void;
-    handleSave: (maintenance: MaintenanceRecord) => void;
+    handleSave: (repair: RepairRecord) => void;
     applianceId?: number;
-    referenceType: MaintenanceReferenceType;
-    spaceType: MaintenanceSpaceType;
+    referenceType: RepairReferenceType;
+    spaceType: RepairSpaceType;
 }
 
-const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
-                                                                     show,
-                                                                     handleClose,
-                                                                     handleSave,
-                                                                     applianceId,
-                                                                     referenceType,
-                                                                     spaceType
-                                                                 }) => {
+const AddRepairModal: React.FC<AddRepairModalProps> = ({
+    show,
+    handleClose,
+    handleSave,
+    applianceId,
+    referenceType,
+    spaceType
+}) => {
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [cost, setCost] = useState(0);
@@ -37,7 +37,7 @@ const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
     const handleSubmit = async () => {
         const standardizedDate = new Date(date).toISOString().split('T')[0];
 
-        const newMaintenance: MaintenanceRecord = {
+        const newRepair: RepairRecord = {
             id: 0,
             description,
             date: standardizedDate,
@@ -49,30 +49,30 @@ const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
         };
 
         try {
-            const response = await fetch(`${SERVER_URL}/maintenance/add`, {
+            const response = await fetch(`${SERVER_URL}/repair/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newMaintenance),
+                body: JSON.stringify(newRepair),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add maintenance record');
+                throw new Error('Failed to add repair record');
             }
 
-            const addedMaintenance = await response.json();
-            handleSave(addedMaintenance);
+            const addedRepair = await response.json();
+            handleSave(addedRepair);
             handleClose();
         } catch (error) {
-            console.error('Error adding maintenance record:', error);
+            console.error('Error adding repair record:', error);
         }
     };
 
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Add Maintenance Record</Modal.Title>
+                <Modal.Title>Add Repair Record</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -125,4 +125,4 @@ const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
     );
 };
 
-export default AddMaintenanceModal;
+export default AddRepairModal;
