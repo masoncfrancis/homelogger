@@ -363,5 +363,64 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
+	// Repair endpoints
+	app.Get("/repair", func(c *fiber.Ctx) error {
+		applianceId := c.Query("applianceId")
+		referenceType := c.Query("referenceType")
+		spaceType := c.Query("spaceType")
+
+		if applianceId == "" || referenceType == "" || spaceType == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameters")
+		}
+
+		applianceIdUint, err := strconv.ParseUint(applianceId, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid applianceId format")
+		}
+
+		repairs, err := database.GetRepairs(db, uint(applianceIdUint), referenceType, spaceType)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error getting repair records: " + err.Error())
+		}
+		return c.JSON(repairs)
+	})
+
+	app.Post("/repair/add", func(c *fiber.Ctx) error {
+		var repair models.Repair
+		if err := c.BodyParser(&repair); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
+		}
+		newRepair, err := database.AddRepair(db, &repair)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error adding repair record: " + err.Error())
+		}
+		return c.Status(fiber.StatusCreated).JSON(newRepair)
+	})
+
+	app.Get("/repair/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		repair, err := database.GetRepair(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString("Repair record not found: " + err.Error())
+		}
+		return c.JSON(repair)
+	})
+
+	app.Delete("/repair/delete/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		if err := database.DeleteRepair(db, uint(idUint)); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error deleting repair record: " + err.Error())
+		}
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
 	app.Listen(":8083")
 }

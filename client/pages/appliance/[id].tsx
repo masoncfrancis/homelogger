@@ -118,7 +118,7 @@ const AppliancePage: React.FC = () => {
                             <div>Documentation content goes here.</div>
                         </Tab>
                     </Tabs>
-                    <Button variant="secondary" onClick={() => router.back()} style={{marginTop: '10px'}}>
+                    <Button variant="secondary" onClick={() => router.push('/appliances')} style={{marginTop: '10px'}}>
                         Back
                     </Button>
                 </Col>

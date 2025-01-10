@@ -52,7 +52,7 @@ const RepairSection: React.FC<RepairProps> = ({applianceId, referenceType, space
                     spaceType: spaceType || ''
                 }).toString();
 
-                const response = await fetch(`${SERVER_URL}/maintenance?${queryParams}`);
+                const response = await fetch(`${SERVER_URL}/repair?${queryParams}`);
                 const data = await response.json();
                 setRepairRecords(data);
             } catch (error) {
