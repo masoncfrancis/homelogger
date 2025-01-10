@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Modal} from 'react-bootstrap';
+import {Button, Modal, Form} from 'react-bootstrap';
 import {MaintenanceRecord} from './MaintenanceSection';
 import {SERVER_URL} from "@/pages/_app";
 
@@ -40,7 +40,12 @@ const ShowMaintenanceModal: React.FC<ShowMaintenanceModalProps> = ({show, handle
                 <p><strong>Description:</strong> {maintenanceRecord.description}</p>
                 <p><strong>Date:</strong> {maintenanceRecord.date}</p>
                 <p><strong>Cost:</strong> ${maintenanceRecord.cost}</p>
-                <p><strong>Notes:</strong> {maintenanceRecord.notes}</p>
+                <Form.Group>
+                    <Form.Label><strong>Notes:</strong></Form.Label>
+                    <div className='form-control'>
+                        {maintenanceRecord.notes}
+                    </div>
+                </Form.Group>
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
                 <Button variant="danger" onClick={handleDelete}>
