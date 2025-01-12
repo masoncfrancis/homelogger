@@ -728,9 +728,6 @@ paths:
                   id:
                     type: integer
                     example: 1
-                  path:
-                    type: string
-                    example: "/uploads/file.txt"
                   originalName:
                     type: string
                     example: "file.txt"
@@ -758,9 +755,6 @@ paths:
                   id:
                     type: integer
                     example: 1
-                  path:
-                    type: string
-                    example: "/uploads/file.txt"
                   originalName:
                     type: string
                     example: "file.txt"
