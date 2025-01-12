@@ -517,3 +517,263 @@ paths:
       responses:
         '204':
           description: Maintenance record deleted
+  /repair:
+    get:
+      summary: Get all repair records
+      parameters:
+        - name: applianceId
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: referenceType
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "Space"
+        - name: spaceType
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "HVAC"
+      responses:
+        '200':
+          description: A list of repair records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    description:
+                      type: string
+                      example: "Replace motor"
+                    date:
+                      type: string
+                      example: "2023-10-01"
+                    cost:
+                      type: number
+                      example: 200.0
+                    notes:
+                      type: string
+                      example: "Replaced motor in the washing machine"
+                    spaceType:
+                      type: string
+                      example: "Laundry Room"
+                    referenceType:
+                      type: string
+                      example: "Motor"
+                    applianceID:
+                      type: integer
+                      example: 1
+  /repair/add:
+    post:
+      summary: Add a new repair record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: "Replace motor"
+                date:
+                  type: string
+                  example: "2023-10-01"
+                cost:
+                  type: number
+                  example: 200.0
+                notes:
+                  type: string
+                  example: "Replaced motor in the washing machine"
+                spaceType:
+                  type: string
+                  example: "Laundry Room"
+                referenceType:
+                  type: string
+                  example: "Motor"
+                applianceID:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Repair record created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  description:
+                    type: string
+                    example: "Replace motor"
+                  date:
+                    type: string
+                    example: "2023-10-01"
+                  cost:
+                    type: number
+                    example: 200.0
+                  notes:
+                    type: string
+                    example: "Replaced motor in the washing machine"
+                  spaceType:
+                    type: string
+                    example: "Laundry Room"
+                  referenceType:
+                    type: string
+                    example: "Motor"
+                  applianceID:
+                    type: integer
+                    example: 1
+  /repair/{id}:
+    get:
+      summary: Get a repair record by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: A repair record object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  description:
+                    type: string
+                    example: "Replace motor"
+                  date:
+                    type: string
+                    example: "2023-10-01"
+                  cost:
+                    type: number
+                    example: 200.0
+                  notes:
+                    type: string
+                    example: "Replaced motor in the washing machine"
+                  spaceType:
+                    type: string
+                    example: "Laundry Room"
+                  referenceType:
+                    type: string
+                    example: "Motor"
+                  applianceID:
+                    type: integer
+                    example: 1
+        '404':
+          description: Repair record not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Repair record not found"
+  /repair/delete/{id}:
+    delete:
+      summary: Delete a repair record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Repair record deleted
+  /files/upload:
+    post:
+      summary: Upload a new file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                userID:
+                  type: string
+                  example: "675c831a85ac9204985b80c9"
+      responses:
+        '201':
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  path:
+                    type: string
+                    example: "/uploads/file.txt"
+                  originalName:
+                    type: string
+                    example: "file.txt"
+                  userID:
+                    type: string
+                    example: "675c831a85ac9204985b80c9"
+  /files/{id}:
+    get:
+      summary: Get an uploaded file by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: File retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  path:
+                    type: string
+                    example: "/uploads/file.txt"
+                  originalName:
+                    type: string
+                    example: "file.txt"
+                  userID:
+                    type: string
+                    example: "675c831a85ac9204985b80c9"
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "File not found"
