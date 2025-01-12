@@ -734,7 +734,7 @@ paths:
                   userID:
                     type: string
                     example: "675c831a85ac9204985b80c9"
-  /files/{id}:
+  /files/info/{id}:
     get:
       summary: Get an uploaded file by ID
       parameters:
@@ -761,6 +761,34 @@ paths:
                   userID:
                     type: string
                     example: "675c831a85ac9204985b80c9"
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "File not found"
+  /files/download/{id}:
+    get:
+      summary: Download a file by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: File downloaded
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         '404':
           description: File not found
           content:

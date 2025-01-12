@@ -422,5 +422,73 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
+	// Upload a new file
+	app.Post("/files/upload", func(c *fiber.Ctx) error {
+		// Parse the multipart form
+		form, err := c.MultipartForm()
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Error parsing multipart form: " + err.Error())
+		}
+
+		// Get the file and userID from the form
+		files := form.File["file"]
+		userID := form.Value["userID"][0]
+
+		if len(files) == 0 || userID == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing file or userID")
+		}
+
+		// Save the file to the server
+		file := files[0]
+		filePath := "./uploads/" + file.Filename
+		if err := c.SaveFile(file, filePath); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error saving file: " + err.Error())
+		}
+
+		// Create a new SavedFile object
+		savedFile := &models.SavedFile{
+			Path:         filePath,
+			OriginalName: file.Filename,
+			UserID:       userID,
+		}
+
+		// Save the file information to the database
+		newFile, err := database.UploadFile(db, savedFile)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error saving file information: " + err.Error())
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(newFile)
+	})
+
+	// Get file information by ID
+	app.Get("/files/info/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		fileInfo, err := database.GetFileInfo(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString("File not found: " + err.Error())
+		}
+
+		return c.JSON(fileInfo)
+	})
+
+	app.Get("/files/download/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		fileInfo, err := database.GetFileInfo(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString("File not found: " + err.Error())
+		}
+		return c.SendFile(fileInfo.Path)
+	})
+
 	app.Listen(":8083")
 }
