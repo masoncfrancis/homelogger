@@ -8,7 +8,7 @@ import (
 
 // ConnectGorm connects to the database
 func ConnectGorm() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("./db-data/sqlite/homelogger.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("./data/db/homelogger.db"), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

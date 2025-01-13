@@ -4,7 +4,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     volumes:
-      - ./server/db-data/sqlite:/root/db-data/sqlite
+      - ./server/data/db:/root/data/db
     ports:
       - "127.0.0.1:8084:8083"
     restart: unless-stopped
