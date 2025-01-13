@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./server/data/db:/root/data/db
+      - ./server/data/uploads:/root/data/uploads
     ports:
       - "127.0.0.1:8084:8083"
     restart: unless-stopped
