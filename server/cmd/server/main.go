@@ -438,16 +438,9 @@ func main() {
 			return c.Status(fiber.StatusBadRequest).SendString("Missing file or userID")
 		}
 
-		// Save the file to the server
+		// Create a new SavedFile object without setting the ID
 		file := files[0]
-		filePath := "./uploads/" + file.Filename
-		if err := c.SaveFile(file, filePath); err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Error saving file: " + err.Error())
-		}
-
-		// Create a new SavedFile object
 		savedFile := &models.SavedFile{
-			Path:         filePath,
 			OriginalName: file.Filename,
 			UserID:       userID,
 		}
@@ -458,7 +451,24 @@ func main() {
 			return c.Status(fiber.StatusInternalServerError).SendString("Error saving file information: " + err.Error())
 		}
 
-		return c.Status(fiber.StatusCreated).JSON(newFile)
+		// Save the file to the server with the id as the file name
+		filePath := "./data/uploads/" + strconv.FormatUint(uint64(newFile.ID), 10)
+		if err := c.SaveFile(file, filePath); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error saving file: " + err.Error())
+		}
+
+		// Update the file path in the database
+		newFile.Path = filePath
+		if _, err := database.UpdateFilePath(db, newFile); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error updating file path: " + err.Error())
+		}
+
+		// Return the id, originalName, and userID
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+			"id":           newFile.ID,
+			"originalName": newFile.OriginalName,
+			"userID":       newFile.UserID,
+		})
 	})
 
 	// Get file information by ID
