@@ -5,15 +5,36 @@ import (
 	"gorm.io/gorm"
 )
 
-// GetFile gets a file by ID
-func GetFileInfo(db *gorm.DB, id uint) (*models.SavedFile, error) {
+// FileInfoResponse represents the response structure for file information
+type FileInfoResponse struct {
+	ID           uint   `json:"id"`
+	OriginalName string `json:"originalName"`
+	UserID       string `json:"userID"`
+}
+
+// GetFileInfo gets a file by ID and returns only id, originalName, and userID
+func GetFileInfo(db *gorm.DB, id uint) (*FileInfoResponse, error) {
 	var file models.SavedFile
-	result := db.Where("id = ?", id).First(&file)
+	result := db.Select("id", "original_name", "user_id").Where("id = ?", id).First(&file)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &file, nil
+	return &FileInfoResponse{
+		ID:           file.ID,
+		OriginalName: file.OriginalName,
+		UserID:       file.UserID,
+	}, nil
+}
+
+// GetFilePath retrieves the file path of a file by its ID
+func GetFilePath(db *gorm.DB, id uint) (string, error) {
+	var file models.SavedFile
+	result := db.Select("path").Where("id = ?", id).First(&file)
+	if result.Error != nil {
+		return "", result.Error
+	}
+	return file.Path, nil
 }
 
 // UploadFile uploads a new file

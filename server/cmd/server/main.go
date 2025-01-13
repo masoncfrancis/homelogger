@@ -493,11 +493,23 @@ func main() {
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
 		}
+
+		// Fetch the file information
 		fileInfo, err := database.GetFileInfo(db, uint(idUint))
 		if err != nil {
 			return c.Status(fiber.StatusNotFound).SendString("File not found: " + err.Error())
 		}
-		return c.SendFile(fileInfo.Path)
+
+		// Fetch the file path using the GetFilePath function
+		filePath, err := database.GetFilePath(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString("File path not found: " + err.Error())
+		}
+
+		// Set the Content-Disposition header to specify the original file name
+		c.Set("Content-Disposition", "attachment; filename="+fileInfo.OriginalName)
+
+		return c.SendFile(filePath)
 	})
 
 	app.Listen(":8083")
