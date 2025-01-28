@@ -1,4 +1,3 @@
-import React from 'react';
 import {Button, Modal, Form} from 'react-bootstrap';
 import {RepairRecord} from './RepairSection';
 import {SERVER_URL} from "@/pages/_app";
