@@ -9,8 +9,7 @@ services:
     ports:
       - "127.0.0.1:8084:8083"
     restart: unless-stopped
-    env_file:
-      - ./server/.env
+    env_file: "./server/.env"
 
   client:
     build:
@@ -21,5 +20,4 @@ services:
     depends_on:
       - server
     restart: unless-stopped
-    env_file:
-      - ./client/.env
+    env_file: "./client/.env"
