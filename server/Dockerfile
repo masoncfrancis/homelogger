@@ -21,7 +21,7 @@ ENV CGO_ENABLED=1
 RUN go build -o main ./cmd/server
 
 # Stage 2: Run the Go binary
-FROM golang:alpine
+FROM alpine
 
 # Set the Current Working Directory inside the container
 WORKDIR /root/
@@ -29,7 +29,7 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 
-# Expose port 8080 to the outside world
+# Expose port 8083 to the outside world
 EXPOSE 8083
 
 # Command to run the executable
