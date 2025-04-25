@@ -1,3 +1,4 @@
+'use client';
 import React, {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {Button, Card, Col, Container, Row, Tab, Tabs} from 'react-bootstrap';
@@ -118,7 +119,7 @@ const AppliancePage: React.FC = () => {
                             <div>Documentation content goes here.</div>
                         </Tab>
                     </Tabs>
-                    <Button variant="secondary" onClick={() => router.push('/appliances')} style={{marginTop: '10px'}}>
+                    <Button variant="secondary" onClick={() => router.push('/appliances.html')} style={{marginTop: '10px'}}>
                         Back
                     </Button>
                 </Col>
