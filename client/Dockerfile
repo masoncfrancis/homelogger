@@ -21,8 +21,8 @@ FROM nginx:stable-alpine
 # Copy the built app to the Nginx HTML directory
 COPY --from=builder /app/out /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 8083
+# Expose port 3000
+EXPOSE 3000
 
 # Use the provided nginx.conf file (mounted via Docker Compose)
 CMD ["nginx", "-g", "daemon off;"]
