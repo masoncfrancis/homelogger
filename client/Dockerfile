@@ -10,7 +10,7 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-ARG NEXT_TELEMETRY_DEBUG=1
+ARG NEXT_TELEMETRY_DISABLED=1
 
 # Build the Next.js app
 RUN npm run build
