@@ -13,8 +13,8 @@ const MyNavbar: React.FC = () => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link as={Link} href="/" active={router.pathname === '/'}>Home</Nav.Link>
-          <Nav.Link as={Link} href="/todo.html" active={router.pathname === '/todo.html'}>To Do</Nav.Link>
-          <Nav.Link as={Link} href="/appliances.html" active={router.pathname === '/appliances.html'}>Appliances</Nav.Link>
+          <Nav.Link as={Link} href="/todo" active={router.pathname === '/todo'}>To Do</Nav.Link>
+          <Nav.Link as={Link} href="/appliances" active={router.pathname === '/appliances'}>Appliances</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
