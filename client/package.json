@@ -13,7 +13,7 @@
     "bootstrap-icons": "^1.11.3",
     "next": "^15.4.7",
     "react": "^18.3.1",
-    "react-bootstrap": "^2.10.9",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
