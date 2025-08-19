@@ -1,3 +1,5 @@
+'use client';
+
 import React, {useEffect, useState} from 'react';
 import {Container, Row} from 'react-bootstrap';
 import MyNavbar from '../components/Navbar';
@@ -73,26 +75,30 @@ const AppliancesPage: React.FC = () => {
         setShowModal(false);
     };
 
+    const handleApplianceClick = (id: number) => {
+        window.location.href = `/appliance.html?id=${id}`;
+    };
+
     return (
         <Container>
             <MyNavbar/>
             <h4 id='maintext'>Appliances</h4>
             <Row style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', padding: '0'}}>
                 {appliances.map(appliance => (
-                    console.log(appliance),
-                        <div key={appliance.id} style={{flex: '0 0 18rem', margin: '0.25rem'}}>
-                            <ApplianceCard
-                                id={appliance.id}
-                                applianceName={appliance.applianceName}
-                                manufacturer={appliance.manufacturer}
-                                modelNumber={appliance.modelNumber}
-                                serialNumber={appliance.serialNumber}
-                                yearPurchased={appliance.yearPurchased}
-                                purchasePrice={appliance.purchasePrice}
-                                location={appliance.location}
-                                type={appliance.type}
-                            />
-                        </div>
+                    <div key={appliance.id} style={{flex: '0 0 18rem', margin: '0.25rem'}}>
+                        <ApplianceCard
+                            id={appliance.id}
+                            applianceName={appliance.applianceName}
+                            manufacturer={appliance.manufacturer}
+                            modelNumber={appliance.modelNumber}
+                            serialNumber={appliance.serialNumber}
+                            yearPurchased={appliance.yearPurchased}
+                            purchasePrice={appliance.purchasePrice}
+                            location={appliance.location}
+                            type={appliance.type}
+                            onClick={() => handleApplianceClick(appliance.id)}
+                        />
+                    </div>
                 ))}
                 <div style={{flex: '0 0 18rem', margin: '0.25rem'}}>
                     <BlankCard onClick={handleAddCardClick}/>
