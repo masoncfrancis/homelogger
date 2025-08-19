@@ -1,3 +1,5 @@
+'use client';
+
 // pages/index.tsx
 import { useState } from 'react';
 import { Container } from 'react-bootstrap';

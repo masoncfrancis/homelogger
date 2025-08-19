@@ -1,6 +1,5 @@
 import React from 'react';
 import {Card} from 'react-bootstrap';
-import Link from 'next/link';
 
 interface ApplianceCardProps {
     id: number;
@@ -12,6 +11,7 @@ interface ApplianceCardProps {
     purchasePrice: string;
     location: string;
     type: string;
+    onClick?: () => void; // Add optional onClick prop
 }
 
 const ApplianceCard: React.FC<ApplianceCardProps> = ({
@@ -23,22 +23,36 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
                                                          yearPurchased,
                                                          purchasePrice,
                                                          location,
-                                                         type
+                                                         type,
+                                                         onClick
                                                      }) => {
+    // If onClick is provided, use Card with click handler; otherwise, fallback to Link
+    if (onClick) {
+        return (
+            <Card style={{width: '18rem', margin: '0', padding: '0', cursor: 'pointer'}} onClick={onClick}>
+                <Card.Body>
+                <Card.Title>{applianceName}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">{type}</Card.Subtitle>
+                <Card.Text>
+                    <strong>Location:</strong> {location}
+                </Card.Text>
+                </Card.Body>
+            </Card>
+        );
+    }
+
     return (
-        <Link href={`/appliance/${id}`} legacyBehavior passHref>
-            <a style={{textDecoration: 'none'}}>
-                <Card style={{width: '18rem', margin: '0', padding: '0', cursor: 'pointer'}}>
-                    <Card.Body>
-                        <Card.Title>{applianceName}</Card.Title>
-                        <Card.Subtitle className="mb-2 text-muted">{type}</Card.Subtitle>
-                        <Card.Text>
-                            <strong>Location:</strong> {location}
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-            </a>
-        </Link>
+        <a style={{textDecoration: 'none'}} href={`/appliance.html?id=${id}`}>
+            <Card style={{width: '18rem', margin: '0', padding: '0', cursor: 'pointer'}}>
+                <Card.Body>
+                <Card.Title>{applianceName}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">{type}</Card.Subtitle>
+                <Card.Text>
+                    <strong>Location:</strong> {location}
+                </Card.Text>
+                </Card.Body>
+            </Card>
+        </a>
     );
 };
 
