@@ -12,4 +12,5 @@ type SavedFile struct {
 	UserID        string `json:"userid" gorm:"not null"`
 	MaintenanceID *uint  `json:"maintenanceId" gorm:"default:null"`
 	RepairID      *uint  `json:"repairId" gorm:"default:null"`
+	ApplianceID   *uint  `json:"applianceId" gorm:"default:null"`
 }

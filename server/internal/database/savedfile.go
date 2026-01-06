@@ -115,3 +115,27 @@ func GetFilesByRepair(db *gorm.DB, repairID uint) ([]FileInfoResponse, error) {
 	}
 	return resp, nil
 }
+
+// GetFilesByAppliance returns file info for files attached to an appliance
+func GetFilesByAppliance(db *gorm.DB, applianceID uint) ([]FileInfoResponse, error) {
+	var files []models.SavedFile
+	result := db.Select("id", "original_name", "user_id").Where("appliance_id = ?", applianceID).Find(&files)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	resp := make([]FileInfoResponse, 0, len(files))
+	for _, f := range files {
+		resp = append(resp, FileInfoResponse{ID: f.ID, OriginalName: f.OriginalName, UserID: f.UserID})
+	}
+	return resp, nil
+}
+
+// AttachFileToAppliance sets the appliance_id for a saved file
+func AttachFileToAppliance(db *gorm.DB, fileID uint, applianceID uint) error {
+	result := db.Model(&models.SavedFile{}).Where("id = ?", fileID).Update("appliance_id", applianceID)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
