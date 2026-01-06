@@ -4,6 +4,7 @@ import {Button, Card, Col, Container, Row, Tab, Tabs} from 'react-bootstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import MaintenanceSection, {MaintenanceReferenceType, MaintenanceSpaceType} from '@/components/MaintenanceSection';
 import RepairSection, {RepairReferenceType, RepairSpaceType} from '@/components/RepairSection';
+import DocumentationSection from '@/components/DocumentationSection';
 import MyNavbar from '@/components/Navbar';
 import {SERVER_URL} from "@/pages/_app";
 import EditApplianceModal from '@/components/EditApplianceModal';
@@ -129,7 +130,7 @@ const AppliancePage: React.FC = () => {
                                                 spaceType={RepairSpaceType.NotApplicable}/>
                         </Tab>
                         <Tab eventKey="documentation" title="Documentation">
-                            <div>Documentation content goes here.</div>
+                            <DocumentationSection applianceId={appliance.id} />
                         </Tab>
                     </Tabs>
                     <Button variant="secondary" onClick={() => window.location.href = '/appliances.html'} style={{marginTop: '10px'}}>

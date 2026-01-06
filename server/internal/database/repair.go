@@ -49,6 +49,11 @@ func GetRepair(db *gorm.DB, id uint) (*models.Repair, error) {
 
 // DeleteRepair deletes a repair record by ID
 func DeleteRepair(db *gorm.DB, id uint) error {
+	// Remove associated files (disk + DB)
+	if err := DeleteFilesByRepair(db, id); err != nil {
+		return err
+	}
+
 	result := db.Where("id = ?", id).Delete(&models.Repair{})
 	if result.Error != nil {
 		return result.Error

@@ -49,6 +49,11 @@ func GetMaintenance(db *gorm.DB, id uint) (*models.Maintenance, error) {
 
 // DeleteMaintenance deletes a maintenance record by ID
 func DeleteMaintenance(db *gorm.DB, id uint) error {
+	// Remove associated files (disk + DB)
+	if err := DeleteFilesByMaintenance(db, id); err != nil {
+		return err
+	}
+
 	result := db.Where("id = ?", id).Delete(&models.Maintenance{})
 	if result.Error != nil {
 		return result.Error

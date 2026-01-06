@@ -29,6 +29,7 @@ export interface MaintenanceRecord {
     spaceType: MaintenanceSpaceType;
     referenceType: MaintenanceReferenceType;
     applianceId: number;
+    attachmentIds?: number[];
 }
 
 interface MaintenanceProps {
