@@ -1,6 +1,8 @@
 package database
 
 import (
+	"os"
+
 	"github.com/masoncfrancis/homelogger/server/internal/models"
 	"gorm.io/gorm"
 )
@@ -114,6 +116,48 @@ func GetFilesByRepair(db *gorm.DB, repairID uint) ([]FileInfoResponse, error) {
 		resp = append(resp, FileInfoResponse{ID: f.ID, OriginalName: f.OriginalName, UserID: f.UserID})
 	}
 	return resp, nil
+}
+
+// DeleteFilesByMaintenance removes files on disk and deletes their DB rows for a maintenance record
+func DeleteFilesByMaintenance(db *gorm.DB, maintenanceID uint) error {
+	var files []models.SavedFile
+	result := db.Select("id", "path").Where("maintenance_id = ?", maintenanceID).Find(&files)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	for _, f := range files {
+		if f.Path != "" {
+			_ = os.Remove(f.Path)
+		}
+	}
+
+	// Delete DB rows
+	if err := db.Where("maintenance_id = ?", maintenanceID).Delete(&models.SavedFile{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteFilesByRepair removes files on disk and deletes their DB rows for a repair record
+func DeleteFilesByRepair(db *gorm.DB, repairID uint) error {
+	var files []models.SavedFile
+	result := db.Select("id", "path").Where("repair_id = ?", repairID).Find(&files)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	for _, f := range files {
+		if f.Path != "" {
+			_ = os.Remove(f.Path)
+		}
+	}
+
+	// Delete DB rows
+	if err := db.Where("repair_id = ?", repairID).Delete(&models.SavedFile{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetFilesByAppliance returns file info for files attached to an appliance
