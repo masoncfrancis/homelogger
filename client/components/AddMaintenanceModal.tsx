@@ -57,7 +57,7 @@ const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
                     continue;
                 }
 
-                const uploadData = await uploadResp.json();
+                const uploadData: { id: number; originalName?: string } = await uploadResp.json();
                 if (uploadData && uploadData.id) {
                     attachmentIds.push(uploadData.id);
                 }
@@ -66,7 +66,16 @@ const AddMaintenanceModal: React.FC<AddMaintenanceModalProps> = ({
             }
         }
 
-        const newMaintenance: any = {
+        const newMaintenance: {
+            description: string;
+            date: string;
+            cost: number;
+            notes: string;
+            spaceType: MaintenanceSpaceType;
+            referenceType: MaintenanceReferenceType;
+            applianceId: number;
+            attachmentIds: number[];
+        } = {
             description,
             date: standardizedDate,
             cost,

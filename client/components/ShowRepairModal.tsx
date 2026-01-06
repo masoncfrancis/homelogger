@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Button, Modal, Form} from 'react-bootstrap';
 import {RepairRecord} from './RepairSection';
 import {SERVER_URL} from "@/pages/_app";
@@ -14,14 +14,16 @@ interface AttachmentInfo { id: number; originalName: string }
 
 const ShowRepairModal: React.FC<ShowRepairModalProps> = ({show, handleClose, repairRecord, handleDeleteRepair}) => {
     const [attachments, setAttachments] = useState<AttachmentInfo[]>([]);
+    const [uploadMessage, setUploadMessage] = useState<string>('');
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         const loadAttachments = async () => {
             try {
                 const resp = await fetch(`${SERVER_URL}/files/repair/${repairRecord.id}`);
                 if (!resp.ok) return;
-                const data = await resp.json();
-                setAttachments(data.map((f: any) => ({ id: f.id, originalName: f.originalName })));
+                const data: Array<{ id: number; originalName: string; userID?: string }> = await resp.json();
+                setAttachments(data.map((f) => ({ id: f.id, originalName: f.originalName })));
             } catch (err) {
                 console.error('Error loading attachments', err);
             }
@@ -65,6 +67,10 @@ const ShowRepairModal: React.FC<ShowRepairModalProps> = ({show, handleClose, rep
                 console.error('Error adding file', err);
             }
         }
+        // notify and clear file input
+        setUploadMessage('Upload successful');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        setTimeout(() => setUploadMessage(''), 3000);
     };
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this?')) {
@@ -112,7 +118,8 @@ const ShowRepairModal: React.FC<ShowRepairModalProps> = ({show, handleClose, rep
 
                 <Form.Group controlId="formAddFiles">
                     <Form.Label>Add attachments</Form.Label>
-                    <Form.Control type="file" multiple onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddFiles(e.target.files)} />
+                    <Form.Control ref={fileInputRef} type="file" multiple onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddFiles(e.target.files)} />
+                    {uploadMessage && <div style={{color: 'green', marginTop: '6px'}}>{uploadMessage}</div>}
                 </Form.Group>
                 <Form.Group>
                     <Form.Label><strong>Notes:</strong></Form.Label>

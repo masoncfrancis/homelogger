@@ -57,7 +57,7 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
                     continue;
                 }
 
-                const uploadData = await uploadResp.json();
+                const uploadData: { id: number; originalName?: string } = await uploadResp.json();
                 if (uploadData && uploadData.id) {
                     attachmentIds.push(uploadData.id);
                 }
@@ -66,7 +66,16 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
             }
         }
 
-        const newRepair: any = {
+        const newRepair: {
+            description: string;
+            date: string;
+            cost: number;
+            notes: string;
+            spaceType: RepairSpaceType;
+            referenceType: RepairReferenceType;
+            applianceId: number;
+            attachmentIds: number[];
+        } = {
             description,
             date: standardizedDate,
             cost,

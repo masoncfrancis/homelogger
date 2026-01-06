@@ -1,12 +1,13 @@
 package main
 
 import (
+	"os"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/masoncfrancis/homelogger/server/internal/database"
 	"github.com/masoncfrancis/homelogger/server/internal/models"
-	"strconv"
-	"os"
 )
 
 func main() {
@@ -565,7 +566,7 @@ func main() {
 	// Associate an existing uploaded file with a maintenance or repair record
 	app.Post("/files/attach", func(c *fiber.Ctx) error {
 		var body struct {
-			FileID      uint `json:"fileId"`
+			FileID        uint `json:"fileId"`
 			MaintenanceID uint `json:"maintenanceId"`
 			RepairID      uint `json:"repairId"`
 		}
