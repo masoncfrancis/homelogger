@@ -58,3 +58,60 @@ func UpdateFilePath(db *gorm.DB, file *models.SavedFile) (*models.SavedFile, err
 
 	return file, nil
 }
+
+// AttachFileToMaintenance sets the maintenance_id for a saved file
+func AttachFileToMaintenance(db *gorm.DB, fileID uint, maintenanceID uint) error {
+	result := db.Model(&models.SavedFile{}).Where("id = ?", fileID).Update("maintenance_id", maintenanceID)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+// AttachFileToRepair sets the repair_id for a saved file
+func AttachFileToRepair(db *gorm.DB, fileID uint, repairID uint) error {
+	result := db.Model(&models.SavedFile{}).Where("id = ?", fileID).Update("repair_id", repairID)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+// DeleteFile deletes the file record by ID
+func DeleteFile(db *gorm.DB, id uint) error {
+	result := db.Where("id = ?", id).Delete(&models.SavedFile{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+// GetFilesByMaintenance returns file info for files attached to a maintenance record
+func GetFilesByMaintenance(db *gorm.DB, maintenanceID uint) ([]FileInfoResponse, error) {
+	var files []models.SavedFile
+	result := db.Select("id", "original_name", "user_id").Where("maintenance_id = ?", maintenanceID).Find(&files)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	resp := make([]FileInfoResponse, 0, len(files))
+	for _, f := range files {
+		resp = append(resp, FileInfoResponse{ID: f.ID, OriginalName: f.OriginalName, UserID: f.UserID})
+	}
+	return resp, nil
+}
+
+// GetFilesByRepair returns file info for files attached to a repair record
+func GetFilesByRepair(db *gorm.DB, repairID uint) ([]FileInfoResponse, error) {
+	var files []models.SavedFile
+	result := db.Select("id", "original_name", "user_id").Where("repair_id = ?", repairID).Find(&files)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	resp := make([]FileInfoResponse, 0, len(files))
+	for _, f := range files {
+		resp = append(resp, FileInfoResponse{ID: f.ID, OriginalName: f.OriginalName, UserID: f.UserID})
+	}
+	return resp, nil
+}

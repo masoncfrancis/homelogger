@@ -29,6 +29,7 @@ export interface RepairRecord {
     spaceType: RepairSpaceType;
     referenceType: RepairReferenceType;
     applianceId: number;
+    attachmentIds?: number[];
 }
 
 interface RepairProps {

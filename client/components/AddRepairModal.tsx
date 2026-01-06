@@ -24,6 +24,7 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
     const [date, setDate] = useState('');
     const [cost, setCost] = useState(0);
     const [notes, setNotes] = useState('');
+    const [files, setFiles] = useState<File[]>([]);
 
     useEffect(() => {
         if (!show) {
@@ -31,21 +32,49 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
             setDate('');
             setCost(0);
             setNotes('');
+            setFiles([]);
         }
     }, [show]);
 
     const handleSubmit = async () => {
         const standardizedDate = new Date(date).toISOString().split('T')[0];
 
-        const newRepair: RepairRecord = {
-            id: 0,
+        const attachmentIds: number[] = [];
+
+        for (const file of files) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('userID', '1');
+
+                const uploadResp = await fetch(`${SERVER_URL}/files/upload`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!uploadResp.ok) {
+                    console.error('Failed to upload attachment', file.name);
+                    continue;
+                }
+
+                const uploadData = await uploadResp.json();
+                if (uploadData && uploadData.id) {
+                    attachmentIds.push(uploadData.id);
+                }
+            } catch (err) {
+                console.error('Error uploading file:', err);
+            }
+        }
+
+        const newRepair: any = {
             description,
             date: standardizedDate,
             cost,
             notes,
             spaceType,
             referenceType,
-            applianceId: applianceId || 0
+            applianceId: applianceId || 0,
+            attachmentIds,
         };
 
         try {
@@ -111,6 +140,14 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
                             onChange={(e) => setNotes(e.target.value)}
                         />
                     </Form.Group>
+                        <Form.Group controlId="formFile">
+                            <Form.Label>Attachment</Form.Label>
+                            <Form.Control
+                                type="file"
+                                multiple
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFiles(e.target.files ? Array.from(e.target.files) : [])}
+                            />
+                        </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>

@@ -15,4 +15,6 @@ type Repair struct {
 	ReferenceType string    `json:"referenceType" gorm:"not null" gorm:"default:''"`
 	ApplianceID   *uint     `json:"applianceID" gorm:"default:null"`
 	Appliance     Appliance `gorm:"foreignKey:ApplianceID;references:ID"` // Foreign key
+	AttachmentID  *uint     `json:"attachmentId" gorm:"default:null"`
+	Attachment    SavedFile `gorm:"foreignKey:AttachmentID;references:ID"`
 }

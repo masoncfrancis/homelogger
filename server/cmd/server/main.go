@@ -6,6 +6,7 @@ import (
 	"github.com/masoncfrancis/homelogger/server/internal/database"
 	"github.com/masoncfrancis/homelogger/server/internal/models"
 	"strconv"
+	"os"
 )
 
 func main() {
@@ -327,14 +328,25 @@ func main() {
 	})
 
 	app.Post("/maintenance/add", func(c *fiber.Ctx) error {
-		var maintenance models.Maintenance
-		if err := c.BodyParser(&maintenance); err != nil {
+		// Expect maintenance fields plus optional attachmentIds array
+		var body struct {
+			models.Maintenance
+			AttachmentIDs []uint `json:"attachmentIds"`
+		}
+		if err := c.BodyParser(&body); err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
 		}
-		newMaintenance, err := database.AddMaintenance(db, &maintenance)
+		// Create maintenance record
+		newMaintenance, err := database.AddMaintenance(db, &body.Maintenance)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Error adding maintenance record: " + err.Error())
 		}
+
+		// Attach files if any
+		for _, fid := range body.AttachmentIDs {
+			_ = database.AttachFileToMaintenance(db, fid, newMaintenance.ID)
+		}
+
 		return c.Status(fiber.StatusCreated).JSON(newMaintenance)
 	})
 
@@ -386,14 +398,22 @@ func main() {
 	})
 
 	app.Post("/repair/add", func(c *fiber.Ctx) error {
-		var repair models.Repair
-		if err := c.BodyParser(&repair); err != nil {
+		var body struct {
+			models.Repair
+			AttachmentIDs []uint `json:"attachmentIds"`
+		}
+		if err := c.BodyParser(&body); err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
 		}
-		newRepair, err := database.AddRepair(db, &repair)
+		newRepair, err := database.AddRepair(db, &body.Repair)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Error adding repair record: " + err.Error())
 		}
+
+		for _, fid := range body.AttachmentIDs {
+			_ = database.AttachFileToRepair(db, fid, newRepair.ID)
+		}
+
 		return c.Status(fiber.StatusCreated).JSON(newRepair)
 	})
 
@@ -487,6 +507,36 @@ func main() {
 		return c.JSON(fileInfo)
 	})
 
+	// List files attached to a maintenance record
+	app.Get("/files/maintenance/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		files, err := database.GetFilesByMaintenance(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error getting files: " + err.Error())
+		}
+		return c.JSON(files)
+	})
+
+	// List files attached to a repair record
+	app.Get("/files/repair/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		files, err := database.GetFilesByRepair(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error getting files: " + err.Error())
+		}
+		return c.JSON(files)
+	})
+
 	app.Get("/files/download/:id", func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		idUint, err := strconv.ParseUint(id, 10, 32)
@@ -510,6 +560,58 @@ func main() {
 		c.Set("Content-Disposition", "attachment; filename="+fileInfo.OriginalName)
 
 		return c.SendFile(filePath)
+	})
+
+	// Associate an existing uploaded file with a maintenance or repair record
+	app.Post("/files/attach", func(c *fiber.Ctx) error {
+		var body struct {
+			FileID      uint `json:"fileId"`
+			MaintenanceID uint `json:"maintenanceId"`
+			RepairID      uint `json:"repairId"`
+		}
+		if err := c.BodyParser(&body); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
+		}
+
+		if body.MaintenanceID != 0 {
+			if err := database.AttachFileToMaintenance(db, body.FileID, body.MaintenanceID); err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Error attaching file: " + err.Error())
+			}
+		}
+		if body.RepairID != 0 {
+			if err := database.AttachFileToRepair(db, body.FileID, body.RepairID); err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Error attaching file: " + err.Error())
+			}
+		}
+
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
+	// Delete a file (record + stored file)
+	app.Delete("/files/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		// Get file path
+		filePath, err := database.GetFilePath(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString("File path not found: " + err.Error())
+		}
+
+		// Delete file from disk if exists
+		if err := os.Remove(filePath); err != nil {
+			// If file doesn't exist, continue to delete DB record
+		}
+
+		// Delete DB record
+		if err := database.DeleteFile(db, uint(idUint)); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error deleting file record: " + err.Error())
+		}
+
+		return c.SendStatus(fiber.StatusNoContent)
 	})
 
 	app.Listen(":8083")
