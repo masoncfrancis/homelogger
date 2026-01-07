@@ -49,6 +49,44 @@ func GetAppliance(db *gorm.DB, id uint) (*models.Appliance, error) {
 
 // DeleteAppliance deletes an appliance by ID
 func DeleteAppliance(db *gorm.DB, id uint) error {
+	// Delete files attached directly to the appliance
+	if err := DeleteFilesByAppliance(db, id); err != nil {
+		return err
+	}
+
+	// For each maintenance linked to this appliance, delete its files
+	var maintenances []models.Maintenance
+	if r := db.Select("id").Where("appliance_id = ?", id).Find(&maintenances); r.Error != nil {
+		return r.Error
+	}
+	for _, m := range maintenances {
+		if err := DeleteFilesByMaintenance(db, m.ID); err != nil {
+			return err
+		}
+	}
+
+	// Delete maintenance rows for this appliance
+	if err := db.Where("appliance_id = ?", id).Delete(&models.Maintenance{}).Error; err != nil {
+		return err
+	}
+
+	// For each repair linked to this appliance, delete its files
+	var repairs []models.Repair
+	if r := db.Select("id").Where("appliance_id = ?", id).Find(&repairs); r.Error != nil {
+		return r.Error
+	}
+	for _, rp := range repairs {
+		if err := DeleteFilesByRepair(db, rp.ID); err != nil {
+			return err
+		}
+	}
+
+	// Delete repair rows for this appliance
+	if err := db.Where("appliance_id = ?", id).Delete(&models.Repair{}).Error; err != nil {
+		return err
+	}
+
+	// Finally delete the appliance
 	result := db.Where("id = ?", id).Delete(&models.Appliance{})
 	if result.Error != nil {
 		return result.Error

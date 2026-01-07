@@ -81,7 +81,7 @@ func AttachFileToRepair(db *gorm.DB, fileID uint, repairID uint) error {
 
 // DeleteFile deletes the file record by ID
 func DeleteFile(db *gorm.DB, id uint) error {
-	result := db.Where("id = ?", id).Delete(&models.SavedFile{})
+	result := db.Unscoped().Where("id = ?", id).Delete(&models.SavedFile{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -132,8 +132,8 @@ func DeleteFilesByMaintenance(db *gorm.DB, maintenanceID uint) error {
 		}
 	}
 
-	// Delete DB rows
-	if err := db.Where("maintenance_id = ?", maintenanceID).Delete(&models.SavedFile{}).Error; err != nil {
+	// Delete DB rows (hard delete)
+	if err := db.Unscoped().Where("maintenance_id = ?", maintenanceID).Delete(&models.SavedFile{}).Error; err != nil {
 		return err
 	}
 	return nil
@@ -153,8 +153,29 @@ func DeleteFilesByRepair(db *gorm.DB, repairID uint) error {
 		}
 	}
 
-	// Delete DB rows
-	if err := db.Where("repair_id = ?", repairID).Delete(&models.SavedFile{}).Error; err != nil {
+	// Delete DB rows (hard delete)
+	if err := db.Unscoped().Where("repair_id = ?", repairID).Delete(&models.SavedFile{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteFilesByAppliance removes files on disk and deletes their DB rows for an appliance
+func DeleteFilesByAppliance(db *gorm.DB, applianceID uint) error {
+	var files []models.SavedFile
+	result := db.Select("id", "path").Where("appliance_id = ?", applianceID).Find(&files)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	for _, f := range files {
+		if f.Path != "" {
+			_ = os.Remove(f.Path)
+		}
+	}
+
+	// Delete DB rows (hard delete)
+	if err := db.Unscoped().Where("appliance_id = ?", applianceID).Delete(&models.SavedFile{}).Error; err != nil {
 		return err
 	}
 	return nil
