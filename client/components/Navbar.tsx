@@ -15,6 +15,7 @@ const MyNavbar: React.FC = () => {
           <Nav.Link as={Link} href="/" active={router.pathname === '/'}>Home</Nav.Link>
           <Nav.Link as={Link} href="/todo.html" active={router.pathname === '/todo.html'}>To Do</Nav.Link>
           <Nav.Link as={Link} href="/appliances.html" active={router.pathname === '/appliances.html'}>Appliances</Nav.Link>
+          <Nav.Link as={Link} href="/reminders" active={router.pathname === '/reminders'}>Reminders</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

@@ -450,6 +450,8 @@ func main() {
 			Title          string `json:"title"`
 			Notes          string `json:"notes"`
 			RecurrenceRule string `json:"recurrenceRule"`
+			ApplianceID    uint   `json:"applianceId"`
+			Area           string `json:"area"`
 		}
 		if err := c.BodyParser(&body); err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
@@ -458,6 +460,10 @@ func main() {
 			Title:          body.Title,
 			Notes:          body.Notes,
 			RecurrenceRule: body.RecurrenceRule,
+			Area:           body.Area,
+		}
+		if body.ApplianceID != 0 {
+			task.ApplianceID = &body.ApplianceID
 		}
 		newTask, err := database.AddTask(db, task)
 		if err != nil {

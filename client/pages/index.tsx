@@ -10,6 +10,9 @@ const HomePage: React.FC = () => {
     <Container>
       <MyNavbar />
       <div style={{ marginTop: '1rem' }}>
+        <h2>Dashboard</h2>
+      </div>
+      <div style={{ marginTop: '1rem' }}>
         <NextUp />
       </div>
     </Container>

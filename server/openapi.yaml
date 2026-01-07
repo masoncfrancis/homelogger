@@ -843,6 +843,12 @@ paths:
                 recurrenceRule:
                   type: string
                   example: "FREQ=MONTHLY;INTERVAL=3"
+                applianceId:
+                  type: integer
+                  example: 1
+                area:
+                  type: string
+                  example: "yard"
       responses:
         '201':
           description: Task created
