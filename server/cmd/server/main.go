@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -441,6 +442,71 @@ func main() {
 			return c.Status(fiber.StatusInternalServerError).SendString("Error deleting repair record: " + err.Error())
 		}
 		return c.SendStatus(fiber.StatusNoContent)
+	})
+
+	// Task endpoints
+	app.Post("/tasks/add", func(c *fiber.Ctx) error {
+		var body struct {
+			Title          string `json:"title"`
+			Notes          string `json:"notes"`
+			RecurrenceRule string `json:"recurrenceRule"`
+		}
+		if err := c.BodyParser(&body); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
+		}
+		task := &models.Task{
+			Title:          body.Title,
+			Notes:          body.Notes,
+			RecurrenceRule: body.RecurrenceRule,
+		}
+		newTask, err := database.AddTask(db, task)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error adding task: " + err.Error())
+		}
+		return c.Status(fiber.StatusCreated).JSON(newTask)
+	})
+
+	app.Get("/tasks", func(c *fiber.Ctx) error {
+		tasks, err := database.ListTasks(db)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error listing tasks: " + err.Error())
+		}
+		return c.JSON(tasks)
+	})
+
+	// Occurrence endpoints
+	app.Get("/occurrences", func(c *fiber.Ctx) error {
+		startStr := c.Query("start")
+		endStr := c.Query("end")
+		if startStr == "" || endStr == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing start or end query parameters (ISO8601)")
+		}
+		start, err := time.Parse(time.RFC3339, startStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid start format: " + err.Error())
+		}
+		end, err := time.Parse(time.RFC3339, endStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid end format: " + err.Error())
+		}
+		occs, err := database.ListOccurrencesByRange(db, start, end)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error listing occurrences: " + err.Error())
+		}
+		return c.JSON(occs)
+	})
+
+	app.Post("/occurrences/:id/complete", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		occ, err := database.MarkOccurrenceComplete(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error marking occurrence complete: " + err.Error())
+		}
+		return c.JSON(occ)
 	})
 
 	// Upload a new file
