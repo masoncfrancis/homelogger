@@ -11,9 +11,10 @@ interface TodoItemProps {
     applianceId?: number;
     spaceType?: string;
     sourceLabel?: string;
+    createdAt?: string;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete, applianceId, spaceType, sourceLabel }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete, applianceId, spaceType, sourceLabel, createdAt }) => {
     const [isChecked, setIsChecked] = useState<boolean>(checked);
 
     const handleCheckboxChange = async () => {
@@ -82,6 +83,17 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete, appli
         sourceText = 'General';
     }
 
+    // Format createdAt if present
+    let createdAtText: string | null = null;
+    if (createdAt) {
+        try {
+            const d = new Date(createdAt);
+            if (!isNaN(d.getTime())) createdAtText = d.toLocaleString();
+        } catch (e) {
+            createdAtText = null;
+        }
+    }
+
     return (
         <ListGroup.Item className="d-flex justify-content-between align-items-center">
             <div style={{ flex: 1 }}>
@@ -91,6 +103,9 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete, appli
                         <>
                             <div>{label}</div>
                             <div className="text-muted" style={{ fontSize: '0.75rem' }}>{sourceText}</div>
+                            {createdAtText && (
+                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{createdAtText}</div>
+                            )}
                         </>
                     }
                     checked={isChecked}

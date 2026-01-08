@@ -85,7 +85,7 @@ const TodoPage: React.FC = () => {
 
             <ListGroup>
                 {todos.map((todo, index) => (
-                    <TodoItem key={index} id={todo.id} label={todo.label} checked={todo.checked} onDelete={handleDeleteTodo} applianceId={todo.applianceId} spaceType={todo.spaceType} sourceLabel={todo.sourceLabel} />
+                    <TodoItem key={index} id={todo.id} label={todo.label} checked={todo.checked} onDelete={handleDeleteTodo} applianceId={todo.applianceId} spaceType={todo.spaceType} sourceLabel={todo.sourceLabel} createdAt={todo.createdAt || todo.CreatedAt || todo.created_at} />
                 ))}
             </ListGroup>
             <i className="bi bi-plus-square-fill" onClick={handleAddTodo} style={{ fontSize: '2rem', cursor: "pointer" }}></i>

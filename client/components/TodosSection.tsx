@@ -97,7 +97,7 @@ const TodosSection: React.FC<Props> = ({applianceId, spaceType}) => {
                 ) : (
                     <ListGroup>
                         {todos.map((t: any) => (
-                            <TodoItem key={t.id} id={t.id} label={t.label} checked={t.checked} onDelete={handleDelete} applianceId={t.applianceId} spaceType={t.spaceType} sourceLabel={t.sourceLabel} />
+                            <TodoItem key={t.id} id={t.id} label={t.label} checked={t.checked} onDelete={handleDelete} applianceId={t.applianceId} spaceType={t.spaceType} sourceLabel={t.sourceLabel} createdAt={t.createdAt || t.CreatedAt || t.created_at} />
                         ))}
                     </ListGroup>
                 )}
