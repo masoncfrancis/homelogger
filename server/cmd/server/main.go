@@ -312,8 +312,23 @@ func main() {
 		referenceType := c.Query("referenceType")
 		spaceType := c.Query("spaceType")
 
-		if applianceId == "" || referenceType == "" || spaceType == "" {
-			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameters")
+		if referenceType == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameter: referenceType")
+		}
+
+		if referenceType == "Space" {
+			if spaceType == "" {
+				return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameter: spaceType for Space reference")
+			}
+			maintenances, err := database.GetMaintenances(db, 0, referenceType, spaceType)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Error getting maintenance records: " + err.Error())
+			}
+			return c.JSON(maintenances)
+		}
+
+		if applianceId == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameter: applianceId for Appliance reference")
 		}
 
 		applianceIdUint, err := strconv.ParseUint(applianceId, 10, 32)
@@ -382,8 +397,23 @@ func main() {
 		referenceType := c.Query("referenceType")
 		spaceType := c.Query("spaceType")
 
-		if applianceId == "" || referenceType == "" || spaceType == "" {
-			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameters")
+		if referenceType == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameter: referenceType")
+		}
+
+		if referenceType == "Space" {
+			if spaceType == "" {
+				return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameter: spaceType for Space reference")
+			}
+			repairs, err := database.GetRepairs(db, 0, referenceType, spaceType)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Error getting repair records: " + err.Error())
+			}
+			return c.JSON(repairs)
+		}
+
+		if applianceId == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing required query parameter: applianceId for Appliance reference")
 		}
 
 		applianceIdUint, err := strconv.ParseUint(applianceId, 10, 32)
@@ -453,7 +483,16 @@ func main() {
 
 		// Get the file and userID from the form
 		files := form.File["file"]
-		userID := form.Value["userID"][0]
+		userID := ""
+		if vals, ok := form.Value["userID"]; ok && len(vals) > 0 {
+			userID = vals[0]
+		}
+
+		// optional spaceType
+		spaceType := ""
+		if vals, ok := form.Value["spaceType"]; ok && len(vals) > 0 {
+			spaceType = vals[0]
+		}
 
 		if len(files) == 0 || userID == "" {
 			return c.Status(fiber.StatusBadRequest).SendString("Missing file or userID")
@@ -464,6 +503,10 @@ func main() {
 		savedFile := &models.SavedFile{
 			OriginalName: file.Filename,
 			UserID:       userID,
+		}
+
+		if spaceType != "" {
+			savedFile.SpaceType = &spaceType
 		}
 
 		// Save the file information to the database
@@ -538,21 +581,6 @@ func main() {
 		return c.JSON(files)
 	})
 
-	// List files attached to an appliance
-	app.Get("/files/appliance/:id", func(c *fiber.Ctx) error {
-		id := c.Params("id")
-		idUint, err := strconv.ParseUint(id, 10, 32)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
-		}
-
-		files, err := database.GetFilesByAppliance(db, uint(idUint))
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Error getting files: " + err.Error())
-		}
-		return c.JSON(files)
-	})
-
 	app.Get("/files/download/:id", func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		idUint, err := strconv.ParseUint(id, 10, 32)
@@ -578,13 +606,43 @@ func main() {
 		return c.SendFile(filePath)
 	})
 
-	// Associate an existing uploaded file with a maintenance or repair record
+	// List files attached to an appliance
+	app.Get("/files/appliance/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		files, err := database.GetFilesByAppliance(db, uint(idUint))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error getting files: " + err.Error())
+		}
+		return c.JSON(files)
+	})
+
+	// List files attached to a space type
+	app.Get("/files/space/:spaceType", func(c *fiber.Ctx) error {
+		spaceType := c.Params("spaceType")
+		if spaceType == "" {
+			return c.Status(fiber.StatusBadRequest).SendString("Missing spaceType")
+		}
+
+		files, err := database.GetFilesBySpace(db, spaceType)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error getting files: " + err.Error())
+		}
+		return c.JSON(files)
+	})
+
+	// Associate an existing uploaded file with a maintenance, repair, appliance, or space
 	app.Post("/files/attach", func(c *fiber.Ctx) error {
 		var body struct {
-			FileID        uint `json:"fileId"`
-			MaintenanceID uint `json:"maintenanceId"`
-			RepairID      uint `json:"repairId"`
-			ApplianceID   uint `json:"applianceId"`
+			FileID        uint   `json:"fileId"`
+			MaintenanceID uint   `json:"maintenanceId"`
+			RepairID      uint   `json:"repairId"`
+			ApplianceID   uint   `json:"applianceId"`
+			SpaceType     string `json:"spaceType"`
 		}
 		if err := c.BodyParser(&body); err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Error parsing body: " + err.Error())
@@ -603,6 +661,12 @@ func main() {
 		if body.ApplianceID != 0 {
 			if err := database.AttachFileToAppliance(db, body.FileID, body.ApplianceID); err != nil {
 				return c.Status(fiber.StatusInternalServerError).SendString("Error attaching file: " + err.Error())
+			}
+		}
+
+		if body.SpaceType != "" {
+			if err := database.AttachFileToSpace(db, body.FileID, body.SpaceType); err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Error attaching file to space: " + err.Error())
 			}
 		}
 

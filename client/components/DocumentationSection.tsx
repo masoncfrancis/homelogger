@@ -3,12 +3,13 @@ import {Card, Button, Form} from 'react-bootstrap';
 import {SERVER_URL} from '@/pages/_app';
 
 interface Props {
-    applianceId: number;
+    applianceId?: number;
+    spaceType?: string;
 }
 
 interface FileInfo { id: number; originalName: string }
 
-const DocumentationSection: React.FC<Props> = ({applianceId}) => {
+const DocumentationSection: React.FC<Props> = ({applianceId, spaceType}) => {
     const [files, setFiles] = useState<FileInfo[]>([]);
     const [uploadMessage, setUploadMessage] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -16,16 +17,17 @@ const DocumentationSection: React.FC<Props> = ({applianceId}) => {
     useEffect(() => {
         const load = async () => {
             try {
-                const resp = await fetch(`${SERVER_URL}/files/appliance/${applianceId}`);
+                const url = spaceType ? `${SERVER_URL}/files/space/${spaceType}` : `${SERVER_URL}/files/appliance/${applianceId}`;
+                const resp = await fetch(url);
                 if (!resp.ok) return;
                 const data: Array<{ id: number; originalName: string }> = await resp.json();
                 setFiles(data.map(d => ({id: d.id, originalName: d.originalName})));
             } catch (err) {
-                console.error('Error loading appliance docs', err);
+                console.error('Error loading docs', err);
             }
         };
         load();
-    }, [applianceId]);
+    }, [applianceId, spaceType]);
 
     const handleAddFiles = async (filesList: FileList | null) => {
         if (!filesList || filesList.length === 0) return;
@@ -35,14 +37,23 @@ const DocumentationSection: React.FC<Props> = ({applianceId}) => {
                 formData.append('file', f);
                 formData.append('userID', '1');
 
+                if (spaceType) {
+                    formData.append('spaceType', spaceType);
+                }
+
                 const uploadResp = await fetch(`${SERVER_URL}/files/upload`, {method: 'POST', body: formData});
                 if (!uploadResp.ok) throw new Error('Upload failed');
                 const uploadData: { id: number; originalName?: string } = await uploadResp.json();
 
+                type AttachBody = { fileId: number; applianceId?: number; spaceType?: string };
+                const attachBody: AttachBody = { fileId: uploadData.id };
+                if (applianceId) attachBody.applianceId = applianceId;
+                if (spaceType) attachBody.spaceType = spaceType;
+
                 await fetch(`${SERVER_URL}/files/attach`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fileId: uploadData.id, applianceId })
+                    body: JSON.stringify(attachBody)
                 });
 
                 setFiles(prev => [...prev, { id: uploadData.id, originalName: uploadData.originalName || `File ${uploadData.id}` }]);

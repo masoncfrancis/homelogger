@@ -204,3 +204,48 @@ func AttachFileToAppliance(db *gorm.DB, fileID uint, applianceID uint) error {
 	}
 	return nil
 }
+
+// AttachFileToSpace sets the space_type for a saved file
+func AttachFileToSpace(db *gorm.DB, fileID uint, spaceType string) error {
+	result := db.Model(&models.SavedFile{}).Where("id = ?", fileID).Update("space_type", spaceType)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+// GetFilesBySpace returns file info for files attached to a space type
+func GetFilesBySpace(db *gorm.DB, spaceType string) ([]FileInfoResponse, error) {
+	var files []models.SavedFile
+	result := db.Select("id", "original_name", "user_id").Where("space_type = ?", spaceType).Find(&files)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	resp := make([]FileInfoResponse, 0, len(files))
+	for _, f := range files {
+		resp = append(resp, FileInfoResponse{ID: f.ID, OriginalName: f.OriginalName, UserID: f.UserID})
+	}
+	return resp, nil
+}
+
+// DeleteFilesBySpace removes files on disk and deletes their DB rows for a space type
+func DeleteFilesBySpace(db *gorm.DB, spaceType string) error {
+	var files []models.SavedFile
+	result := db.Select("id", "path").Where("space_type = ?", spaceType).Find(&files)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	for _, f := range files {
+		if f.Path != "" {
+			_ = os.Remove(f.Path)
+		}
+	}
+
+	// Delete DB rows (hard delete)
+	if err := db.Unscoped().Where("space_type = ?", spaceType).Delete(&models.SavedFile{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
