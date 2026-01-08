@@ -8,9 +8,12 @@ interface TodoItemProps {
     label: string;
     checked: boolean;
     onDelete: (id: string) => void;
+    applianceId?: number;
+    spaceType?: string;
+    sourceLabel?: string;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete, applianceId, spaceType, sourceLabel }) => {
     const [isChecked, setIsChecked] = useState<boolean>(checked);
 
     const handleCheckboxChange = async () => {
@@ -52,15 +55,24 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete }) => 
         }
     };
 
+    const sourceText = sourceLabel ? sourceLabel : (spaceType ? `Space: ${spaceType}` : (applianceId ? `Appliance ID: ${applianceId}` : 'General'));
+
     return (
         <ListGroup.Item className="d-flex justify-content-between align-items-center">
-            <Form.Check
-                type='checkbox'
-                label={label}
-                checked={isChecked}
-                onChange={handleCheckboxChange}
-            />
-            <span style={{ cursor: 'pointer' }}>
+            <div style={{ flex: 1 }}>
+                <Form.Check
+                    type='checkbox'
+                    label={
+                        <>
+                            <div>{label}</div>
+                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>{sourceText}</div>
+                        </>
+                    }
+                    checked={isChecked}
+                    onChange={handleCheckboxChange}
+                />
+            </div>
+            <span style={{ cursor: 'pointer', marginLeft: '8px' }}>
                 <i className="bi bi-trash" onClick={handleDelete}></i>
             </span>
         </ListGroup.Item>

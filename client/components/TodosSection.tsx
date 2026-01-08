@@ -21,7 +21,27 @@ const TodosSection: React.FC<Props> = ({applianceId, spaceType}) => {
             const resp = await fetch(url);
             if (!resp.ok) return;
             const data = await resp.json();
-            setTodos(data);
+
+            // Enrich todos with appliance names when applicable
+            const applianceIds: number[] = Array.from(new Set(data.filter((t: any) => t.applianceId).map((t: any) => Number(t.applianceId))));
+            const nameMap: Record<number, string> = {};
+            await Promise.all(applianceIds.map(async (id) => {
+                try {
+                    const r = await fetch(`${SERVER_URL}/appliances/${id}`);
+                    if (!r.ok) return;
+                    const a = await r.json();
+                    nameMap[id] = a.applianceName || `Appliance ${id}`;
+                } catch (e) {
+                    console.error('Error loading appliance name', e);
+                }
+            }));
+
+            const enriched = data.map((t: any) => ({
+                ...t,
+                sourceLabel: t.applianceId ? nameMap[Number(t.applianceId)] : (t.spaceType || null),
+            }));
+
+            setTodos(enriched);
         } catch (err) {
             console.error('Error loading todos', err);
         }
@@ -41,6 +61,22 @@ const TodosSection: React.FC<Props> = ({applianceId, spaceType}) => {
             });
             if (!resp.ok) throw new Error('Add failed');
             const added = await resp.json();
+
+            // Enrich added todo with source label if appliance
+            if (added.applianceId) {
+                try {
+                    const r = await fetch(`${SERVER_URL}/appliances/${added.applianceId}`);
+                    if (r.ok) {
+                        const a = await r.json();
+                        added.sourceLabel = a.applianceName || `Appliance ${added.applianceId}`;
+                    }
+                } catch (e) {
+                    console.error('Error loading appliance name', e);
+                }
+            } else {
+                added.sourceLabel = added.spaceType || null;
+            }
+
             setTodos(prev => [...prev, added]);
             setNewLabel('');
         } catch (err) {
@@ -61,7 +97,7 @@ const TodosSection: React.FC<Props> = ({applianceId, spaceType}) => {
                 ) : (
                     <ListGroup>
                         {todos.map((t: any) => (
-                            <TodoItem key={t.id} id={t.id} label={t.label} checked={t.checked} onDelete={handleDelete} />
+                            <TodoItem key={t.id} id={t.id} label={t.label} checked={t.checked} onDelete={handleDelete} applianceId={t.applianceId} spaceType={t.spaceType} sourceLabel={t.sourceLabel} />
                         ))}
                     </ListGroup>
                 )}
