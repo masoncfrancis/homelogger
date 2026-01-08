@@ -3,6 +3,7 @@ import {Container, Tab, Tabs, Card} from 'react-bootstrap';
 import MaintenanceSection, {MaintenanceReferenceType, MaintenanceSpaceType} from '@/components/MaintenanceSection';
 import RepairSection, {RepairReferenceType, RepairSpaceType} from '@/components/RepairSection';
 import DocumentationSection from '@/components/DocumentationSection';
+import TodosSection from '@/components/TodosSection';
 import MyNavbar from '../components/Navbar';
 
 const ElectricalPage: React.FC = () => {
@@ -19,6 +20,9 @@ const ElectricalPage: React.FC = () => {
                 </Tab>
                 <Tab eventKey="documents" title="Documents">
                     <DocumentationSection spaceType={MaintenanceSpaceType.Electrical} />
+                </Tab>
+                <Tab eventKey="todos" title="Todos">
+                    <TodosSection spaceType={MaintenanceSpaceType.Electrical} />
                 </Tab>
             </Tabs>
         </Container>

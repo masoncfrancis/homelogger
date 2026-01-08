@@ -5,6 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import MaintenanceSection, {MaintenanceReferenceType, MaintenanceSpaceType} from '@/components/MaintenanceSection';
 import RepairSection, {RepairReferenceType, RepairSpaceType} from '@/components/RepairSection';
 import DocumentationSection from '@/components/DocumentationSection';
+import TodosSection from '@/components/TodosSection';
 import MyNavbar from '@/components/Navbar';
 import {SERVER_URL} from "@/pages/_app";
 import EditApplianceModal from '@/components/EditApplianceModal';
@@ -131,6 +132,9 @@ const AppliancePage: React.FC = () => {
                         </Tab>
                         <Tab eventKey="documentation" title="Documentation">
                             <DocumentationSection applianceId={appliance.id} />
+                        </Tab>
+                        <Tab eventKey="todos" title="Todos">
+                            <TodosSection applianceId={appliance.id} />
                         </Tab>
                     </Tabs>
                     <Button variant="secondary" onClick={() => window.location.href = '/appliances.html'} style={{marginTop: '10px'}}>

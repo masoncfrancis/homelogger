@@ -6,10 +6,23 @@ info:
 paths:
   /todo:
     get:
-      summary: Get all todos
+      summary: Get todos (optionally filter by appliance or space)
+      parameters:
+        - name: applianceId
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: spaceType
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "HVAC"
       responses:
         '200':
-          description: A list of todos
+          description: A list of todos (filtered)
           content:
             application/json:
               schema:
@@ -29,6 +42,14 @@ paths:
                     userID:
                       type: string
                       example: "675c831a85ac9204985b80c9"
+                    applianceId:
+                      type: integer
+                      nullable: true
+                      example: 0
+                    spaceType:
+                      type: string
+                      nullable: true
+                      example: "HVAC"
   /todo/add:
     post:
       summary: Add a new todo
@@ -45,6 +66,14 @@ paths:
                 userID:
                   type: string
                   example: "675c831a85ac9204985b80c9"
+                applianceId:
+                  type: integer
+                  description: Optional appliance ID to associate the todo with
+                  example: 0
+                spaceType:
+                  type: string
+                  description: Optional space type (e.g., HVAC, Plumbing) to associate the todo with
+                  example: "HVAC"
       responses:
         '201':
           description: Todo created
@@ -59,6 +88,14 @@ paths:
                   label:
                     type: string
                     example: "Buy groceries"
+                  applianceId:
+                    type: integer
+                    nullable: true
+                    example: 0
+                  spaceType:
+                    type: string
+                    nullable: true
+                    example: "HVAC"
   /todo/delete/{id}:
     delete:
       summary: Delete a todo
@@ -67,7 +104,7 @@ paths:
           in: path
           required: true
           schema:
-            type: int
+            type: integer
             example: 1
       responses:
         '204':
@@ -80,7 +117,7 @@ paths:
           in: path
           required: true
           schema:
-            type: int
+            type: integer
             example: 2
       requestBody:
         required: true
@@ -328,7 +365,7 @@ paths:
           in: path
           required: true
           schema:
-            type: int
+            type: integer
             example: 1
       responses:
         '200':

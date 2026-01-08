@@ -44,8 +44,18 @@ func main() {
 			return c.SendString("Error connecting GORM to db")
 		}
 
-		// Get all todos
-		todos, err := database.GetTodos(db)
+		// Get optional filters
+		applianceIdStr := c.Query("applianceId")
+		spaceType := c.Query("spaceType")
+		var applianceId uint = 0
+		if applianceIdStr != "" {
+			if idUint, err := strconv.ParseUint(applianceIdStr, 10, 32); err == nil {
+				applianceId = uint(idUint)
+			}
+		}
+
+		// Get todos with optional filters
+		todos, err := database.GetTodos(db, applianceId, spaceType)
 		if err != nil {
 			return c.SendString("Error getting todos:" + err.Error())
 		}
@@ -105,8 +115,23 @@ func main() {
 			return c.SendString("Error parsing body")
 		}
 
-		// Add a todo
-		todo, err := database.AddTodo(db, body.Label, body.Checked, body.UserID)
+		// Add a todo (may include optional applianceId/spaceType)
+		var applianceId uint = 0
+		if bodyMap := c.Body(); len(bodyMap) > 0 {
+			// body parsed into struct already; we'll parse optional fields separately below
+		}
+		// parse optional fields from a secondary struct
+		var opt struct {
+			ApplianceID uint   `json:"applianceId"`
+			SpaceType   string `json:"spaceType"`
+		}
+		_ = c.BodyParser(&opt)
+
+		if opt.ApplianceID != 0 {
+			applianceId = opt.ApplianceID
+		}
+
+		todo, err := database.AddTodo(db, body.Label, body.Checked, body.UserID, applianceId, opt.SpaceType)
 		if err != nil {
 			return c.SendString("Error adding todo:" + err.Error())
 		}
