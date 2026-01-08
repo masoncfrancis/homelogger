@@ -1,24 +1,130 @@
 # HomeLogger
 
-HomeLogger is a home maintenance tracker inspired by [LubeLogger](https://github.com/hargata/lubelog). 
+HomeLogger is a simple home maintenance and asset tracker for homeowners. It centralizes appliances, repairs, and maintenance tasks so you can record work, receipts, and schedules for things around your home.
 
-The project is still in it's infancy. Keep checking back here to keep an eye on the progress. 
+This repository contains a Next.js React client and a Go (Fiber + GORM) server with an SQLite database. The project is early-stage but includes a working client and server and a small REST API defined in [server/openapi.yaml](server/openapi.yaml).
 
-### Tech Stack
+**Contents**
+- **Client:** web UI built with Next.js and React ([client](client/))
+- **Server:** Go API server using Fiber and GORM ([server](server/))
+- **Database:** SQLite database stored in [server/data/db](server/data/db)
 
-#### Client:
+**Goals**
+- Track appliances, repairs and maintenance history
+- Attach files (receipts/photos) to records
+- Provide a simple, local-first experience with optional Docker support
 
-- Node
-- Next.js
-- React
-- Bootstrap
+**Tech Stack**
+- Client: Node, Next.js, React, Bootstrap
+- Server: Go, Fiber web framework, GORM ORM
+- Database: SQLite
 
-#### Server:
+**Repository Layout (high level)**
+- [client](client/) — Next.js app and frontend components
+- [server](server/) — Go server, internal packages, and OpenAPI spec
+	- [server/cmd/server/main.go](server/cmd/server/main.go)
+	- [server/openapi.yaml](server/openapi.yaml)
+	- [server/internal/models](server/internal/models)
 
-- Go
-- Go Fiber
-- GORM
+Getting started
+---------------
 
-#### Database:
+Prerequisites
+ - Go (>= 1.20 recommended) for running the server locally
+ - Node.js (24+) and npm for the client
+ - Docker & Docker Compose (optional, for containerized runs)
 
-- SQLite
+ Docker Compose (recommended for quick start)
+----------------------------------
+
+This repo includes a `docker-compose.yml` for running both services together.
+
+Start both services with:
+
+```bash
+docker compose up --build
+```
+
+Stop and remove containers with:
+ 
+```bash
+docker compose down
+```
+
+ Local development
+----------------------------------
+
+1) Start the API server
+
+```bash
+cd server
+go run ./cmd/server
+```
+
+The server uses an SQLite file under `server/data/db`. On first run it will create the DB and necessary tables via GORM migrations in the code.
+
+2) Start the client
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Open http://localhost:3000 to view the Next.js app. The client expects the API to be running at the default address configured in the client environment (see `client/.env` or client code for API URL locations).
+
+Environment configuration
+-------------------------
+
+Server environment variables (create `.env` at `server/` if needed)
+- `PORT` — port to run the API (default 8080)
+- `DATABASE_URL` — (optional) path or DSN for SQLite; default is `server/data/db/homelogger.db` or similar used by code
+
+Client environment variables
+- The client uses Next.js environment patterns if required (check `client/next.config.js` or `client/.env.local`)
+
+API and docs
+------------
+
+The server exposes a REST API. The OpenAPI spec is available at [server/openapi.yaml](server/openapi.yaml). Use it to generate clients, inspect endpoints, or run API docs tools (Swagger UI / Redoc).
+
+Data and uploads
+----------------
+
+- SQLite DB file is stored under [server/data/db](server/data/db)
+- Uploaded files are stored under [server/data/uploads](server/data/uploads)
+
+Development tips
+----------------
+- When changing server models, GORM auto-migrations will apply on startup (see `server/internal/database/gorm.go`).
+- To debug the client, use the browser devtools and Next.js console output.
+
+Contributing
+------------
+
+Contributions are welcome. Suggested workflow:
+
+1. Fork the repo
+2. Create a feature branch
+3. Open a PR with a clear description of changes
+
+If you plan to add larger features (new API endpoints, DB schema changes) open an issue first to discuss the design.
+
+License
+-------
+
+This project is available under the terms of the MIT license, as shown in the [LICENSE](LICENSE) file in this repository.
+
+Contact
+-------
+
+For questions or feedback, open an issue or discussion post in this repo. 
+
+Further work / Roadmap
+----------------------
+Development is ongoing. Planned features include:
+
+- Planning tools for seasonal maintenance and repairs
+- Enhanced reporting and export options
+
+See [plan.md](plan.md) for tentative feature plans and priorities.
