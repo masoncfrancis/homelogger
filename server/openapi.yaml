@@ -902,59 +902,6 @@ paths:
                     status:
                       type: string
                       example: "pending"
-  /occurrences/appliance/{id}:
-    get:
-      summary: List occurrences for an appliance
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: start
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: end
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-      responses:
-        '200':
-          description: A list of occurrences for the appliance
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      example: 1
-                    taskId:
-                      type: integer
-                      example: 2
-                    dueAt:
-                      type: string
-                      format: date-time
-                      example: "2026-02-01T09:00:00Z"
-                    status:
-                      type: string
-                      example: "pending"
-                    task:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 2
-                        title:
-                          type: string
-                          example: "Change HVAC filter"
   /occurrences/{id}/complete:
     post:
       summary: Mark occurrence complete

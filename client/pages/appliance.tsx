@@ -33,7 +33,6 @@ const AppliancePage: React.FC = () => {
     const [id, setId] = useState<string | null>(null);
     const [appliance, setAppliance] = useState<Appliance | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [upcoming, setUpcoming] = useState<Array<{id:number; dueAt:string; status:string; task?: {id:number; title:string}}>>([]);
 
     useEffect(() => {
         setId(getIdFromQuery());
@@ -45,15 +44,6 @@ const AppliancePage: React.FC = () => {
                 .then(response => response.json())
                 .then(data => setAppliance(data))
                 .catch(error => console.error('Error fetching appliance:', error));
-
-            // fetch upcoming occurrences for this appliance (next 3 months)
-            const now = new Date();
-            const end = new Date();
-            end.setMonth(end.getMonth() + 3);
-            fetch(`${SERVER_URL}/occurrences/appliance/${id}?start=${encodeURIComponent(now.toISOString())}&end=${encodeURIComponent(end.toISOString())}`)
-                .then(r => r.json())
-                .then(data => setUpcoming(data || []))
-                .catch(e => console.error('Error fetching upcoming occurrences:', e));
         }
     }, [id]);
 
@@ -143,19 +133,6 @@ const AppliancePage: React.FC = () => {
                             <DocumentationSection applianceId={appliance.id} />
                         </Tab>
                     </Tabs>
-                    <div style={{marginTop: '1rem'}}>
-                        <h5>Next Up for this appliance</h5>
-                        {upcoming.length === 0 && <div>No upcoming items</div>}
-                        {upcoming.map(u => (
-                            <Card key={u.id} style={{marginTop: '0.5rem'}}>
-                                <Card.Body>
-                                    <div style={{fontWeight: 600}}>{u.task?.title || 'Task'}</div>
-                                    <div style={{fontSize: 12, color: '#666'}}>{new Date(u.dueAt).toLocaleString()}</div>
-                                    <div style={{marginTop: '0.5rem'}}>Status: {u.status}</div>
-                                </Card.Body>
-                            </Card>
-                        ))}
-                    </div>
                     <Button variant="secondary" onClick={() => window.location.href = '/appliances.html'} style={{marginTop: '10px'}}>
                         Back
                     </Button>
