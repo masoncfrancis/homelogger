@@ -10,6 +10,4 @@ type Task struct {
 	Title          string `json:"title" gorm:"not null;default:''"`
 	Notes          string `json:"notes" gorm:"not null;default:''"`
 	RecurrenceRule string `json:"recurrenceRule" gorm:"not null;default:''"` // RFC5545 RRULE string (without leading "RRULE:")
-	ApplianceID    *uint  `json:"applianceId" gorm:"default:null;index"`
-	Area           string `json:"area" gorm:"not null;default:''"`
 }
