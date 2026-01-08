@@ -14,7 +14,10 @@ export default function App({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
       <footer style={{padding: '12px 0', marginTop: '24px'}}>
         <div style={{textAlign: 'center', color: '#6c757d', fontSize: '0.9rem'}}>
-          Version v0.1.0 — <a href="https://github.com/masoncfrancis/homelogger" target="_blank" rel="noopener noreferrer">GitHub</a>
+          Version v0.1.0 — <a href="https://github.com/FrancisLaboratories/homelogger" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+        <div style={{textAlign: 'center', color: '#6c757d', fontSize: '0.8rem', marginTop: '4px'}}>
+          Made with &#x2665; in Detroit
         </div>
       </footer>
     </>
