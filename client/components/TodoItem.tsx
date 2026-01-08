@@ -55,7 +55,32 @@ const TodoItem: React.FC<TodoItemProps> = ({ id, label, checked, onDelete, appli
         }
     };
 
-    const sourceText = sourceLabel ? sourceLabel : (spaceType ? `Space: ${spaceType}` : (applianceId ? `Appliance ID: ${applianceId}` : 'General'));
+    const prettySpace = (s?: string | null) => {
+        if (!s) return null;
+        switch (s) {
+            case 'BuildingExterior': return 'Building Exterior';
+            case 'BuildingInterior': return 'Building Interior';
+            case 'Electrical': return 'Electrical';
+            case 'HVAC': return 'HVAC';
+            case 'Plumbing': return 'Plumbing';
+            case 'Yard': return 'Yard';
+            default:
+                // Fallback: split camel case or return raw
+                return s.replace(/([a-z])([A-Z])/g, '$1 $2');
+        }
+    };
+
+    let sourceText: string;
+    if (applianceId) {
+        sourceText = `Appliance: ${sourceLabel || `Appliance ${applianceId}`}`;
+    } else if (spaceType) {
+        const pretty = prettySpace(spaceType);
+        sourceText = pretty ? `${pretty}` : `${spaceType}`;
+    } else if (sourceLabel) {
+        sourceText = sourceLabel;
+    } else {
+        sourceText = 'General';
+    }
 
     return (
         <ListGroup.Item className="d-flex justify-content-between align-items-center">
