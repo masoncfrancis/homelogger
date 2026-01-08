@@ -63,6 +63,26 @@ func ListOccurrencesByRange(db *gorm.DB, start, end time.Time) ([]models.Occurre
 	return occs, nil
 }
 
+// ListOccurrencesByAppliance returns occurrences for tasks attached to a given appliance
+func ListOccurrencesByAppliance(db *gorm.DB, applianceID uint, start, end time.Time) ([]models.OccurrenceWithTask, error) {
+	var occs []models.Occurrence
+	// Join tasks to filter by appliance_id
+	if err := db.Joins("JOIN tasks ON tasks.id = occurrences.task_id").Where("tasks.appliance_id = ? AND due_at >= ? AND due_at <= ?", applianceID, start, end).Order("due_at asc").Find(&occs).Error; err != nil {
+		return nil, err
+	}
+
+	// For each occurrence, load the task
+	var result []models.OccurrenceWithTask
+	for _, o := range occs {
+		var t models.Task
+		if err := db.First(&t, o.TaskID).Error; err != nil {
+			return nil, err
+		}
+		result = append(result, models.OccurrenceWithTask{Occurrence: o, Task: t})
+	}
+	return result, nil
+}
+
 // MarkOccurrenceComplete sets the occurrence status to completed and records CompletedAt
 func MarkOccurrenceComplete(db *gorm.DB, id uint) (*models.Occurrence, error) {
 	var occ models.Occurrence

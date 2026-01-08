@@ -502,6 +502,35 @@ func main() {
 		return c.JSON(occs)
 	})
 
+	// List occurrences for an appliance
+	app.Get("/occurrences/appliance/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		idUint, err := strconv.ParseUint(id, 10, 32)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+		startStr := c.Query("start")
+		endStr := c.Query("end")
+		var start time.Time = time.Now().UTC()
+		var end time.Time = time.Now().UTC().AddDate(0, 3, 0) // default 3 months
+		if startStr != "" {
+			if s, err := time.Parse(time.RFC3339, startStr); err == nil {
+				start = s
+			}
+		}
+		if endStr != "" {
+			if e, err := time.Parse(time.RFC3339, endStr); err == nil {
+				end = e
+			}
+		}
+
+		occs, err := database.ListOccurrencesByAppliance(db, uint(idUint), start, end)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Error listing occurrences for appliance: " + err.Error())
+		}
+		return c.JSON(occs)
+	})
+
 	app.Post("/occurrences/:id/complete", func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		idUint, err := strconv.ParseUint(id, 10, 32)
