@@ -1,18 +1,19 @@
 'use client';
 
-import React from 'react';
+// pages/index.tsx
+import { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import MyNavbar from '../components/Navbar';
-import NextUp from '../components/NextUp';
 
 const HomePage: React.FC = () => {
+  const [key, setKey] = useState<string>('main');
+
   return (
     <Container>
       <MyNavbar />
-      <div style={{ marginTop: '1rem' }}>
-        <NextUp />
-      </div>
+      <p id='maintext'>Welcome to the main page.</p>
     </Container>
+
   );
 };
 
