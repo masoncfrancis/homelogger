@@ -51,6 +51,31 @@ func main() {
 		return c.SendString("Hello, World")
 	})
 
+	// Health endpoint
+	app.Get("/health", func(c *fiber.Ctx) error {
+		// Check DB connectivity
+		dbSQL, err := db.DB()
+		dbStatus := "ok"
+		if err != nil {
+			dbStatus = "error: " + err.Error()
+		} else if err := dbSQL.Ping(); err != nil {
+			dbStatus = "error: " + err.Error()
+		}
+
+		status := fiber.Map{
+			"status":  "ok",
+			"version": Version,
+			"db":      dbStatus,
+		}
+
+		// If DB is not ok, return 500
+		if dbStatus != "ok" {
+			return c.Status(fiber.StatusInternalServerError).JSON(status)
+		}
+
+		return c.Status(fiber.StatusOK).JSON(status)
+	})
+
 	app.Get("/todo", func(c *fiber.Ctx) error {
 		// Connect to gorm
 		db, err := database.ConnectGorm()
