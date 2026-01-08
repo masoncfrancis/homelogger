@@ -9,5 +9,14 @@ export const SERVER_URL = `${process.env.NEXT_PUBLIC_SERVER_URL}`;
 
 
 export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return (
+    <>
+      <Component {...pageProps} />
+      <footer style={{padding: '12px 0', marginTop: '24px'}}>
+        <div style={{textAlign: 'center', color: '#6c757d', fontSize: '0.9rem'}}>
+          Version v0.1.0 — <a href="https://github.com/masoncfrancis/homelogger" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </footer>
+    </>
+  )
 }

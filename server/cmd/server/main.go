@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -10,7 +12,19 @@ import (
 	"github.com/masoncfrancis/homelogger/server/internal/models"
 )
 
+// Version is the application version. It can be overridden at build time using -ldflags "-X main.Version=..."
+var Version = "v0.1.0"
+
 func main() {
+	// CLI flags
+	showVersion := flag.Bool("version", false, "Print version and exit")
+	shortV := flag.Bool("v", false, "Print version and exit (shorthand)")
+	flag.Parse()
+	if (showVersion != nil && *showVersion) || (shortV != nil && *shortV) {
+		fmt.Println(Version)
+		os.Exit(0)
+	}
+
 	// Connect to GORM
 	db, err := database.ConnectGorm()
 	if err != nil {
@@ -725,5 +739,6 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
+	fmt.Printf("Starting HomeLogger Server %s on port 8083\n", Version)
 	app.Listen(":8083")
 }
