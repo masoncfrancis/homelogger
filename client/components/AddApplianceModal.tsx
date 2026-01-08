@@ -16,6 +16,8 @@ const AddApplianceModal: React.FC<AddApplianceModalProps> = ({show, handleClose,
     const [purchasePrice, setPurchasePrice] = useState('');
     const [location, setLocation] = useState('');
     const [type, setType] = useState('');
+    const [errors, setErrors] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!show) {
@@ -31,7 +33,17 @@ const AddApplianceModal: React.FC<AddApplianceModalProps> = ({show, handleClose,
     }, [show]);
 
     const handleSubmit = () => {
+        setErrors([]);
+        const errs: string[] = [];
+        if (!applianceName || applianceName.trim() === '') errs.push('Appliance name is required');
+        if (!type || type === '') errs.push('Type is required');
+        if (errs.length > 0) {
+            setErrors(errs);
+            return;
+        }
+        setIsSubmitting(true);
         handleSave(applianceName, manufacturer, modelNumber, serialNumber, yearPurchased, purchasePrice, location, type);
+        setIsSubmitting(false);
         handleClose();
     };
 
@@ -120,14 +132,19 @@ const AddApplianceModal: React.FC<AddApplianceModalProps> = ({show, handleClose,
                             onChange={(e) => setPurchasePrice(e.target.value)}
                         />
                     </Form.Group>
+                    {errors.length > 0 && (
+                        <div style={{color: 'red', marginTop: '8px'}}>
+                            {errors.map((e, idx) => <div key={idx}>{e}</div>)}
+                        </div>
+                    )}
                 </Form>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSubmit}>
-                    Save Changes
+                <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
             </Modal.Footer>
         </Modal>

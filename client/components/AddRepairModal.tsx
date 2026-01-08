@@ -25,6 +25,8 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
     const [cost, setCost] = useState(0);
     const [notes, setNotes] = useState('');
     const [files, setFiles] = useState<File[]>([]);
+    const [errors, setErrors] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!show) {
@@ -37,7 +39,18 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
     }, [show]);
 
     const handleSubmit = async () => {
+        setErrors([]);
+        const errs: string[] = [];
+        if (!description || description.trim() === '') errs.push('Description is required');
+        if (!date) errs.push('Date is required');
+        if (isNaN(cost) || cost < 0) errs.push('Cost must be a positive number');
+        if (errs.length > 0) {
+            setErrors(errs);
+            return;
+        }
+
         const standardizedDate = new Date(date).toISOString().split('T')[0];
+        setIsSubmitting(true);
 
         const attachmentIds: number[] = [];
 
@@ -104,6 +117,8 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
             handleClose();
         } catch (error) {
             console.error('Error adding repair record:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -157,15 +172,20 @@ const AddRepairModal: React.FC<AddRepairModalProps> = ({
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFiles(e.target.files ? Array.from(e.target.files) : [])}
                             />
                         </Form.Group>
+                        {errors.length > 0 && (
+                            <div style={{color: 'red', marginTop: '8px'}}>
+                                {errors.map((e, idx) => <div key={idx}>{e}</div>)}
+                            </div>
+                        )}
                 </Form>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSubmit}>
-                    Save Changes
-                </Button>
+                        <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : 'Save Changes'}
+                        </Button>
             </Modal.Footer>
         </Modal>
     );

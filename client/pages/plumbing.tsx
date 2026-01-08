@@ -3,10 +3,12 @@ import {Container, Tab, Tabs, Card} from 'react-bootstrap';
 import MaintenanceSection, {MaintenanceReferenceType, MaintenanceSpaceType} from '@/components/MaintenanceSection';
 import RepairSection, {RepairReferenceType, RepairSpaceType} from '@/components/RepairSection';
 import DocumentationSection from '@/components/DocumentationSection';
+import MyNavbar from '../components/Navbar';
 
 const PlumbingPage: React.FC = () => {
     return (
         <Container style={{marginTop: '16px'}}>
+            <MyNavbar />
             <h3>Plumbing</h3>
             <Tabs defaultActiveKey="maintenance" id="plumbing-tabs" className="mb-3">
                 <Tab eventKey="maintenance" title="Maintenance">
