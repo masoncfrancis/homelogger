@@ -21,7 +21,7 @@ const BuildingExteriorPage: React.FC = () => {
                 <Tab eventKey="documents" title="Documents">
                     <DocumentationSection spaceType={MaintenanceSpaceType.BuildingExterior} />
                 </Tab>
-                <Tab eventKey="todos" title="Todos">
+                <Tab eventKey="todos" title="To-dos">
                     <TodosSection spaceType={MaintenanceSpaceType.BuildingExterior} />
                 </Tab>
             </Tabs>

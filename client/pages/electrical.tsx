@@ -21,7 +21,7 @@ const ElectricalPage: React.FC = () => {
                 <Tab eventKey="documents" title="Documents">
                     <DocumentationSection spaceType={MaintenanceSpaceType.Electrical} />
                 </Tab>
-                <Tab eventKey="todos" title="Todos">
+                <Tab eventKey="todos" title="To-dos">
                     <TodosSection spaceType={MaintenanceSpaceType.Electrical} />
                 </Tab>
             </Tabs>

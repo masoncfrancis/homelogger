@@ -21,7 +21,7 @@ const BuildingInteriorPage: React.FC = () => {
                 <Tab eventKey="documents" title="Documents">
                     <DocumentationSection spaceType={MaintenanceSpaceType.BuildingInterior} />
                 </Tab>
-                <Tab eventKey="todos" title="Todos">
+                <Tab eventKey="todos" title="To-dos">
                     <TodosSection spaceType={MaintenanceSpaceType.BuildingInterior} />
                 </Tab>
             </Tabs>

@@ -21,7 +21,7 @@ const PlumbingPage: React.FC = () => {
                 <Tab eventKey="documents" title="Documents">
                     <DocumentationSection spaceType={MaintenanceSpaceType.Plumbing} />
                 </Tab>
-                <Tab eventKey="todos" title="Todos">
+                <Tab eventKey="todos" title="To-dos">
                     <TodosSection spaceType={MaintenanceSpaceType.Plumbing} />
                 </Tab>
             </Tabs>

@@ -133,7 +133,7 @@ const AppliancePage: React.FC = () => {
                         <Tab eventKey="documentation" title="Documentation">
                             <DocumentationSection applianceId={appliance.id} />
                         </Tab>
-                        <Tab eventKey="todos" title="Todos">
+                        <Tab eventKey="todos" title="To-dos">
                             <TodosSection applianceId={appliance.id} />
                         </Tab>
                     </Tabs>

@@ -21,7 +21,7 @@ const YardPage: React.FC = () => {
                 <Tab eventKey="documents" title="Documents">
                     <DocumentationSection spaceType={MaintenanceSpaceType.Yard} />
                 </Tab>
-                <Tab eventKey="todos" title="Todos">
+                <Tab eventKey="todos" title="To-dos">
                     <TodosSection spaceType={MaintenanceSpaceType.Yard} />
                 </Tab>
             </Tabs>

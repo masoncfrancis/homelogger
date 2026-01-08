@@ -55,9 +55,9 @@ const TodosSection: React.FC<Props> = ({applianceId, spaceType}) => {
     return (
         <Card>
             <Card.Body>
-                <h5>Todos</h5>
+                <h5>To-dos</h5>
                 {todos.length === 0 ? (
-                    <div>No todos</div>
+                    <div>No to-dos</div>
                 ) : (
                     <ListGroup>
                         {todos.map((t: any) => (
@@ -67,7 +67,7 @@ const TodosSection: React.FC<Props> = ({applianceId, spaceType}) => {
                 )}
 
                 <Form.Group controlId="todoAdd" style={{marginTop: '8px', display: 'flex'}}>
-                    <Form.Control type="text" placeholder="New todo" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} />
+                    <Form.Control type="text" placeholder="New to-do" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} />
                     <Button variant="primary" onClick={handleAdd} style={{marginLeft: '8px'}}>Add</Button>
                 </Form.Group>
             </Card.Body>

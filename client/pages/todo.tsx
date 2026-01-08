@@ -61,7 +61,7 @@ const TodoPage: React.FC = () => {
     return (
         <Container>
             <MyNavbar />
-            <h4 id='maintext'>To do:</h4>
+            <h4 id='maintext'>To-dos:</h4>
 
             <ListGroup>
                 {todos.map((todo, index) => (
