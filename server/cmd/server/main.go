@@ -22,7 +22,7 @@ import (
 )
 
 // Version is the application version. It can be overridden at build time using -ldflags "-X main.Version=..."
-var Version = "v0.1.0"
+var Version = "v0.1.1"
 
 var backupMu sync.Mutex
 
