@@ -1,10 +1,19 @@
 package main
 
 import (
+	"archive/zip"
+	"context"
+	"database/sql"
 	"flag"
 	"fmt"
+	"io"
 	"os"
+	"path/filepath"
 	"strconv"
+	"sync"
+	"time"
+
+	sqlite3 "github.com/mattn/go-sqlite3"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -14,6 +23,8 @@ import (
 
 // Version is the application version. It can be overridden at build time using -ldflags "-X main.Version=..."
 var Version = "v0.1.0"
+
+var backupMu sync.Mutex
 
 func main() {
 	// CLI flags
@@ -762,6 +773,165 @@ func main() {
 		}
 
 		return c.SendStatus(fiber.StatusNoContent)
+	})
+
+	// Download a backup ZIP containing the DB and uploads
+	app.Get("/backup/download", func(c *fiber.Ctx) error {
+		pr, pw := io.Pipe()
+
+		go func() {
+			zw := zip.NewWriter(pw)
+			// ensure the writer is closed which also closes the underlying pipe writer
+			defer func() {
+				_ = zw.Close()
+				_ = pw.Close()
+			}()
+
+			// Create a consistent DB backup using the sqlite3 online backup API.
+			dbPath := "./data/db/homelogger.db"
+			tmpBackup := filepath.Join("./data/db", fmt.Sprintf("homelogger-backup-%d.db", time.Now().UnixNano()))
+
+			// Copy fallback helper
+			copyFile := func(src, dst string) error {
+				in, err := os.Open(src)
+				if err != nil {
+					return err
+				}
+				defer in.Close()
+				out, err := os.Create(dst)
+				if err != nil {
+					return err
+				}
+				defer out.Close()
+				if _, err := io.Copy(out, in); err != nil {
+					return err
+				}
+				return out.Sync()
+			}
+
+			// Serialize backups to avoid multiple concurrent backup attempts
+			backupMu.Lock()
+			defer backupMu.Unlock()
+
+			// Attempt online backup using driver-specific API
+			backedUp := false
+			if db != nil {
+				// get *sql.DB from GORM
+				if dbSQL, err := db.DB(); err == nil {
+					// open destination DB file
+					destDB, err := sql.Open("sqlite3", tmpBackup)
+					if err == nil {
+						defer destDB.Close()
+
+						// acquire source connection with timeout
+						srcCtx, srcCancel := context.WithTimeout(context.Background(), 5*time.Second)
+						defer srcCancel()
+						srcConn, err := dbSQL.Conn(srcCtx)
+						if err == nil {
+							defer srcConn.Close()
+
+							// acquire dest connection with timeout
+							destCtx, destCancel := context.WithTimeout(context.Background(), 5*time.Second)
+							defer destCancel()
+							destConn, err := destDB.Conn(destCtx)
+							if err == nil {
+								defer destConn.Close()
+								// Use Raw to get driver connections
+								err = srcConn.Raw(func(srcDriverConn interface{}) error {
+									return destConn.Raw(func(destDriverConn interface{}) error {
+										srcSqliteConn, ok1 := srcDriverConn.(*sqlite3.SQLiteConn)
+										destSqliteConn, ok2 := destDriverConn.(*sqlite3.SQLiteConn)
+										if !ok1 || !ok2 {
+											return fmt.Errorf("driver does not expose sqlite3 connections")
+										}
+										// dest.Backup(destName, srcConn, srcName) returns (int, error)
+										if _, err := destSqliteConn.Backup("main", srcSqliteConn, "main"); err != nil {
+											return err
+										}
+										backedUp = true
+										return nil
+									})
+								})
+								if err != nil {
+									// fallthrough to copy
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if !backedUp {
+				// fallback to copying the file
+				if err := copyFile(dbPath, tmpBackup); err != nil {
+					_ = pw.CloseWithError(err)
+					return
+				}
+			}
+
+			// Ensure tmpBackup is removed after adding
+			defer func() {
+				_ = os.Remove(tmpBackup)
+			}()
+
+			// Add the DB backup file into the ZIP
+			if info, err := os.Stat(tmpBackup); err == nil && !info.IsDir() {
+				f, err := os.Open(tmpBackup)
+				if err != nil {
+					_ = pw.CloseWithError(err)
+					return
+				}
+				func() {
+					defer f.Close()
+					dst, err := zw.Create("db/" + filepath.Base(tmpBackup))
+					if err != nil {
+						_ = pw.CloseWithError(err)
+						return
+					}
+					if _, err := io.Copy(dst, f); err != nil {
+						_ = pw.CloseWithError(err)
+						return
+					}
+				}()
+			}
+
+			// Walk uploads directory and add files preserving relative paths
+			uploadsRoot := "./data/uploads"
+			_ = filepath.Walk(uploadsRoot, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+				if info.IsDir() {
+					return nil
+				}
+
+				rel, err := filepath.Rel(uploadsRoot, path)
+				if err != nil {
+					return err
+				}
+
+				f, err := os.Open(path)
+				if err != nil {
+					return err
+				}
+				defer f.Close()
+
+				// Use forward slashes inside ZIP
+				dest := filepath.ToSlash(filepath.Join("uploads", rel))
+				dst, err := zw.Create(dest)
+				if err != nil {
+					return err
+				}
+				if _, err := io.Copy(dst, f); err != nil {
+					return err
+				}
+				return nil
+			})
+		}()
+
+		c.Set("Content-Type", "application/zip")
+		c.Set("Content-Disposition", "attachment; filename=homelogger-backup.zip")
+		return c.SendStream(pr)
 	})
 
 	fmt.Printf("Starting HomeLogger Server %s on port 8083\n", Version)

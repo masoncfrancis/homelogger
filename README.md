@@ -96,6 +96,22 @@ Data and uploads
 - SQLite DB file is stored under [server/data/db](server/data/db)
 - Uploaded files are stored under [server/data/uploads](server/data/uploads)
 
+Backup & export
+----------------
+
+- The app includes a server endpoint and a client settings page to download a full backup.
+- The backup endpoint: `GET /backup/download` on the API server. It streams a ZIP containing:
+
+Notes & safety
+- Always keep an additional copy of the original DB before overwriting (step 3 makes a `.old`).
+- If your server is behind Docker with volumes, restore the files into the host path used by the volume or restore directly inside the running container (use `docker cp` or mount the volume and replace files), then restart the container.
+- Restores can fail if versions mismatch; ensure your server code and SQLite driver versions are compatible with the DB file.
+	- the SQLite database file (under `data/db/`), and
+	- the `data/uploads/` directory with all uploaded files.
+- Client settings: open the web UI and go to `Settings` to use the "Download Backup" button which calls the endpoint and triggers a browser download.
+
+Security note: the backup endpoint is unauthenticated in this version — if you expose the server to untrusted networks, add authentication or restrict access.
+
 Development tips
 ----------------
 - When changing server models, GORM auto-migrations will apply on startup (see `server/internal/database/gorm.go`).

@@ -798,6 +798,30 @@ paths:
                   userID:
                     type: string
                     example: "675c831a85ac9204985b80c9"
+  /backup/download:
+    get:
+      summary: Download a ZIP backup of the application data
+      description: |
+        Streams a ZIP file containing the SQLite database (from server/data/db) and the uploads directory (server/data/uploads).
+        The response is a binary ZIP suitable for download and local backups.
+      responses:
+        '200':
+          description: Backup ZIP file
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '500':
+          description: Server error preparing backup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error preparing backup"
         '404':
           description: File not found
           content:

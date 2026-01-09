@@ -20,6 +20,7 @@ const MyNavbar: React.FC = () => {
           <Nav.Link as={Link} href="/hvac.html" active={router.pathname === '/hvac.html'}>HVAC</Nav.Link>
           <Nav.Link as={Link} href="/plumbing.html" active={router.pathname === '/plumbing.html'}>Plumbing</Nav.Link>
           <Nav.Link as={Link} href="/yard.html" active={router.pathname === '/yard.html'}>Yard</Nav.Link>
+          <Nav.Link as={Link} href="/settings" active={router.pathname === '/settings'}>Settings</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
