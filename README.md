@@ -101,6 +101,8 @@ Backup & export
 
 - The app includes a server endpoint and a client settings page to download a full backup.
 - The backup endpoint: `GET /backup/download` on the API server. It streams a ZIP containing:
+	- the SQLite database file
+	- the uploads directory with all files
 
 Notes & safety
 - Always keep an additional copy of the original DB before overwriting (step 3 makes a `.old`).
