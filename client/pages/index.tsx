@@ -1,19 +1,107 @@
-'use client';
+"use client";
 
-// pages/index.tsx
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import MyNavbar from '../components/Navbar';
+import ListGroup from 'react-bootstrap/ListGroup';
+import TodoItem from '../components/TodoItem';
+import { SERVER_URL } from "@/pages/_app";
+
+const todoUrl = `${SERVER_URL}/todo`;
+const todoAddUrl = `${SERVER_URL}/todo/add`;
+
+type Todo = {
+  id: string | number;
+  label: string;
+  checked: boolean;
+  applianceId?: number | null;
+  spaceType?: string | null;
+  sourceLabel?: string | null;
+  createdAt?: string | null;
+  CreatedAt?: string | null;
+  created_at?: string | null;
+};
 
 const HomePage: React.FC = () => {
-  const [key, setKey] = useState<string>('main');
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch(todoUrl);
+        const data = await response.json();
+
+        const dataTyped: Todo[] = data as Todo[];
+        const applianceIds: number[] = Array.from(new Set(dataTyped.filter((t) => t.applianceId).map((t) => Number(t.applianceId))));
+        const nameMap: Record<number, string> = {};
+        await Promise.all(applianceIds.map(async (id) => {
+          try {
+            const r = await fetch(`${SERVER_URL}/appliances/${id}`);
+            if (!r.ok) return;
+            const a = await r.json();
+            nameMap[id] = a.applianceName || `Appliance ${id}`;
+          } catch (e) {
+            console.error('Error loading appliance name', e);
+          }
+        }));
+
+        const enriched: Todo[] = dataTyped.map((t) => ({
+          ...t,
+          sourceLabel: t.applianceId ? nameMap[Number(t.applianceId)] : (t.spaceType || null),
+        }));
+
+        setTodos(enriched);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+      }
+    };
+
+    fetchTodos();
+  }, []);
+
+  const handleAddTodo = async () => {
+    const label = prompt('What should go in this item?');
+    if (label) {
+      const newTodo = { label, checked: false, userid: "1" };
+
+      try {
+        const response = await fetch(todoAddUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newTodo),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add todo');
+        }
+
+        const addedTodo = await response.json();
+        setTodos([...todos, addedTodo]);
+      } catch (error) {
+        console.error('Error adding todo:', error);
+      }
+    }
+  };
+
+  const handleDeleteTodo = (id: string) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => String(todo.id) !== id));
+  };
 
   return (
     <Container>
       <MyNavbar />
-      <p id='maintext'>Welcome to the main page.</p>
-    </Container>
+      <h4 id='maintext'>To-dos:</h4>
 
+      <ListGroup>
+        {todos.map((todo, index) => (
+          <TodoItem key={index} id={String(todo.id)} label={todo.label} checked={todo.checked} onDelete={handleDeleteTodo} applianceId={todo.applianceId || undefined} spaceType={todo.spaceType || undefined} sourceLabel={todo.sourceLabel || undefined} createdAt={todo.createdAt || todo.CreatedAt || todo.created_at || undefined} />
+        ))}
+      </ListGroup>
+      <i className="bi bi-plus-square-fill" onClick={handleAddTodo} style={{ fontSize: '2rem', cursor: "pointer" }}></i>
+    </Container>
   );
 };
 
