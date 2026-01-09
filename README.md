@@ -45,6 +45,8 @@ Start both services with:
 docker compose up --build
 ```
 
+The client will be available at http://localhost:3005
+
 Stop and remove containers with:
  
 ```bash
