@@ -117,7 +117,6 @@ Security note: the backup endpoint is unauthenticated in this version — if you
 Development tips
 ----------------
 - When changing server models, GORM auto-migrations will apply on startup (see `server/internal/database/gorm.go`).
-- To debug the client, use the browser devtools and Next.js console output.
 
 Contributing
 ------------
