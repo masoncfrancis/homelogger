@@ -1,0 +1,38 @@
+.idea/
+.github/
+.vscode/
+
+# Node deps / build artifacts
+node_modules
+client/node_modules
+client/.next
+client/out
+client/.vercel
+client/.cache
+client/.env.*
+client/nginx.conf
+!client/.env.production
+
+# Server runtime data
+server/data
+data
+data/db
+data/uploads
+
+# VCS / editor files
+.git
+.vscode
+.idea
+
+# Env, logs, OS files
+*.log
+.env
+.env.*
+!client/.env.production
+.DS_Store
+Thumbs.db
+
+# Other
+coverage
+dist
+tmp

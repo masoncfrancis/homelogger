@@ -1,5 +1,5 @@
 # Stage 1: Build the Next.js app
-FROM node:22-alpine AS client-builder
+FROM node:24-alpine AS client-builder
 
 WORKDIR /client
 
@@ -22,29 +22,35 @@ RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod ./
+# Copy go.mod from the server directory
+COPY server/go.mod ./
 
 # Download dependencies
 RUN go mod download
 
-# Copy the source
-COPY . .
+# Copy only the server source into the build context
+COPY server/ .
 
 ENV CGO_ENABLED=1
 RUN go build -o main ./cmd/server
 
 # Stage 3: Final image based on Alpine, running nginx + the Go server
-FROM alpine:latest
+FROM alpine:latest as final
 
 RUN apk add --no-cache ca-certificates nginx
+
+# Ensure the runtime working directory matches expectations in server code
+WORKDIR /root
 
 # Copy the built static site (from client build). If your Next.js build exports static files
 # they should be in /client/out; adjust if your build places them elsewhere.
 COPY --from=client-builder /client/out /usr/share/nginx/html
 
-# Use the project's nginx config if present (adjust path if needed)
-COPY client/combo-nginx.conf /etc/nginx/nginx.conf
+# Overwrite nginx main config with a minimal one that includes conf.d/*.conf
+COPY nginx-main.conf /etc/nginx/nginx.conf
+
+# Place the server block into nginx's conf.d (renamed)
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 
 # Copy the Go binary
 COPY --from=server-builder /app/main /usr/local/bin/main
