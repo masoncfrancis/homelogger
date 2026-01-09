@@ -73,7 +73,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3005 to view the Next.js app. The client expects the API to be running at the default address configured in the client environment (see `client/.env` or client code for API URL locations).
+Open http://localhost:3000 to view the Next.js app. The client expects the API to be running at the default address configured in the client environment (see `client/.env` or client code for API URL locations).
 
 Environment configuration
 -------------------------
