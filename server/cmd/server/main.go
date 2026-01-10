@@ -3,7 +3,6 @@ package main
 import (
 	"archive/zip"
 	"context"
-	"database/sql"
 	"flag"
 	"fmt"
 	"io"
@@ -12,8 +11,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	sqlite3 "github.com/mattn/go-sqlite3"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -813,50 +810,18 @@ func main() {
 			backupMu.Lock()
 			defer backupMu.Unlock()
 
-			// Attempt online backup using driver-specific API
+			// Attempt to create a consistent DB copy using SQLite's "VACUUM INTO" SQL
+			// Use ExecContext with a short timeout so we don't block indefinitely.
 			backedUp := false
 			if db != nil {
-				// get *sql.DB from GORM
 				if dbSQL, err := db.DB(); err == nil {
-					// open destination DB file
-					destDB, err := sql.Open("sqlite3", tmpBackup)
-					if err == nil {
-						defer destDB.Close()
-
-						// acquire source connection with timeout
-						srcCtx, srcCancel := context.WithTimeout(context.Background(), 5*time.Second)
-						defer srcCancel()
-						srcConn, err := dbSQL.Conn(srcCtx)
-						if err == nil {
-							defer srcConn.Close()
-
-							// acquire dest connection with timeout
-							destCtx, destCancel := context.WithTimeout(context.Background(), 5*time.Second)
-							defer destCancel()
-							destConn, err := destDB.Conn(destCtx)
-							if err == nil {
-								defer destConn.Close()
-								// Use Raw to get driver connections
-								err = srcConn.Raw(func(srcDriverConn interface{}) error {
-									return destConn.Raw(func(destDriverConn interface{}) error {
-										srcSqliteConn, ok1 := srcDriverConn.(*sqlite3.SQLiteConn)
-										destSqliteConn, ok2 := destDriverConn.(*sqlite3.SQLiteConn)
-										if !ok1 || !ok2 {
-											return fmt.Errorf("driver does not expose sqlite3 connections")
-										}
-										// dest.Backup(destName, srcConn, srcName) returns (int, error)
-										if _, err := destSqliteConn.Backup("main", srcSqliteConn, "main"); err != nil {
-											return err
-										}
-										backedUp = true
-										return nil
-									})
-								})
-								if err != nil {
-									// fallthrough to copy
-								}
-							}
-						}
+					vacCtx, vacCancel := context.WithTimeout(context.Background(), 15*time.Second)
+					defer vacCancel()
+					// Use VACUUM INTO which creates a consistent copy of the DB
+					// Note: VACUUM INTO requires SQLite 3.27+
+					vacuumSQL := fmt.Sprintf("VACUUM INTO '%s'", tmpBackup)
+					if _, err := dbSQL.ExecContext(vacCtx, vacuumSQL); err == nil {
+						backedUp = true
 					}
 				}
 			}
